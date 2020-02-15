@@ -73,6 +73,6 @@ Support Operating System
 
 <br>
 
-## User Guide to Introduction of SEMA EAPI and Developer's Guide: [Click Here](https://adlink-epm.github.io/sema-page/#/source/DeveloperGuide)
+## Here is Developer's Guide: [Click Here](https://adlink-epm.github.io/sema-page/#/source/DeveloperGuide)
     
    
