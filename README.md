@@ -53,7 +53,7 @@ Support Operating System
 <br>
 
 ## SEMA Release Note:
-* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA/sema_4.0_release/SEMA%204.0.0_20200215.rar)
+* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA%204.0.0_20200215.rar)
 * Version: 4.0.0
 * update date: 2020/02/15
 * md5 info: e2a3972475cd795de95ac2ffb19174a1
