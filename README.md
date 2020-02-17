@@ -62,5 +62,5 @@ Support Operating System
 <br>
 
 ## Here is Developer's Guide: 
-* [Click Here](http://localhost:3000/#/source/Intro)
+* [click Here](https://adlink-epm.github.io/sema-page/#/source/Intro)
    
