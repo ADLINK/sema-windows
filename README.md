@@ -23,31 +23,18 @@ Features
 SEMA® is designed to be:
 
 * Power Consumption
-
 * User Area Access
-
 * I2C Control 
-
 * Temperatures (CPU and Board)
-
 * Board Information (Serial Number, Part Number, Firmware Version...)
-
 * Fan Control
-
 * GPIO Control
-
 * Watch Dog  
-
-
 
 
 Detailed forensic information is available after system or module failures. The BMC Power-Up Error Log function provides detailed information about history of failures that may have occurred during power-up sequences. Log information includes e.g. error number, flags, restart event, power cycles, boot count, status, CPU temperature and board temperature. Moreover minimum and maximum temperature of the CPU and system is available to analyze system or module failure in detail.
 
 
-
-
-
-​     
 
 Support Operating System
 --------------------------
@@ -66,13 +53,13 @@ Support Operating System
 <br>
 
 ## SEMA Release Note:
-   1. Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA/sema_4.0_release/SEMA%204.0_20200215.rar)
-   2. Version: 4.0 
-   3. update date: 2020/02/15
+* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA/sema_4.0_release/SEMA%204.0_20200215.rar)
+* Version: 4.0.0
+* update date: 2020/02/15
 
 
 <br>
 
-## Here is Developer's Guide: [Click Here](http://localhost:3000/#/source/Intro)
-    
+## Here is Developer's Guide: 
+* [Click Here](http://localhost:3000/#/source/Intro)
    
