@@ -38,7 +38,6 @@ Detailed forensic information is available after system or module failures. The 
 
 Support Operating System
 --------------------------
-
 * **Windows OS**
       Windows 10 64bit
 * **Linux OS**
@@ -52,7 +51,7 @@ Support Operating System
    
 <br>
 
-## SEMA Release Note:
+## Release update:
 * Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA%204.0.0_20200215.rar)
 * Version: 4.0.0
 * update date: 2020/02/15
@@ -61,6 +60,6 @@ Support Operating System
 
 <br>
 
-## Here is Developer's Guide: 
-* [click Here](https://adlink-epm.github.io/sema-page/#/source/Intro)
+## Developer's Guide: 
+* See [documentation](https://adlink-epm.github.io/sema-page/#/source/Intro) for more details.
    
