@@ -61,5 +61,5 @@ Support Operating System
 <br>
 
 ## Developer's Guide: 
-* See [documentation](https://adlink-epm.github.io/sema-doc/#/source/Intro) for more details.
+* See [documentation](https://adlink-epm.github.io/sema-doc/#/) for more details.
    
