@@ -4,7 +4,7 @@
 
 <img src="https://cdn.adlinktech.com/webupd/en/Upload/ProductNews/logo_sema.png" alt="sema_logo" width="30%" align="right"  />
 
-## What is SEMA?
+## What is SEMA 4.0?
 
 **The Smart Embedded Management Agent (SEMA®)** 
 
