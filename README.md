@@ -59,11 +59,15 @@ Support Operating System
   * EAPI library
   * SEMA Win10 Driver with the digital signed
 * update date: 2020/05/20
-* gitlab md5 info: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307 (internal use)
+* md5 info: 1bbaf4323b7becbf7e23930534b297ae
 
 
 <br>
 
 ## Developer's Guide: 
 * See [documentation](https://adlink-epm.github.io/sema-doc/#/) for more details.
+
+## Other information:
+internal GitLab commit ID: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307
+
    
