@@ -43,7 +43,7 @@ Support Operating System
 * **Linux OS**
        Kernel 4.4 or above
 * **Yocto Linux**  
-      TBD (Provide by end of Mar. 2020)
+      TBD (Provide by end of May. 2020)
 * **VxWorks (by request)** 
 * **QNX (by request)**
 
@@ -54,6 +54,10 @@ Support Operating System
 ## Release update:
 * Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/sema_windows%2FSEMA4.0.1_Win10_64bit_20200520.zip)
 * Version: 4.0.1
+* Includes 
+  * SEMA Uility with commandline ( provide this source for your reference)
+  * EAPI library
+  * SEMA Win10 Driver with the digital signed
 * update date: 2020/05/20
 * gitlab md5 info: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307 (internal use)
 
