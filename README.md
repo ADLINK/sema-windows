@@ -28,7 +28,7 @@ SEMA® is designed to be:
 * Temperatures (CPU and Board)
 * Board Information (Serial Number, Part Number, Firmware Version...)
 * Fan Control
-* GPIO Control
+* GPIO Control (only support PCA9535 I/O expander)
 * Watch Dog  
 
 
