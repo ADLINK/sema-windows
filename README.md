@@ -52,7 +52,7 @@ Support Operating System
 <br>
 
 ## Release update:
-* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/sema_windows%2FSEMA4.0.1_Win10_64bit_20200520.zip)
+* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA4.0%2FSEMA4.0.1_Win10_64bit_20200520.zip)
 * Version: 4.0.1
 * Includes 
   * SEMA Uility with commandline ( provide this source for your reference)
