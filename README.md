@@ -52,10 +52,10 @@ Support Operating System
 <br>
 
 ## Release update:
-* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA%204.0.0_20200215.rar)
-* Version: 4.0.0
-* update date: 2020/02/15
-* md5 info: e2a3972475cd795de95ac2ffb19174a1
+* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/sema_windows%2FSEMA4.0.1_Win10_64bit_20200520.zip)
+* Version: 4.0.1
+* update date: 2020/05/20
+* gitlab md5 info: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307 (internal use)
 
 
 <br>
