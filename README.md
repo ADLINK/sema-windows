@@ -67,6 +67,9 @@ Support Operating System
 ## Developer's Guide: 
 * See [documentation](https://adlink-epm.github.io/sema-doc/#/) for more details.
 
+## Supported Hardware List:
+* see [list](https://adlink-epm.github.io/sema-doc/#/source/SupportedHardware) for more details
+
 ## Other information:
 internal GitLab commit ID: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307
 
