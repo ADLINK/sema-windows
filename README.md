@@ -64,11 +64,17 @@ Support Operating System
 
 <br>
 
-## Developer's Guide: 
-* See [documentation](https://adlink-epm.github.io/sema-doc/#/) for more details.
+## how to install SEMA 4.0:
+* see [document](https://adlink-epm.github.io/sema-doc/#/source/HowToInstallSEMA?id=windows-10-64bit) for more details
+
 
 ## Supported Hardware List:
 * see [list](https://adlink-epm.github.io/sema-doc/#/source/SupportedHardware) for more details
+
+
+## Developer's Guide: 
+* See [documentation](https://adlink-epm.github.io/sema-doc/#/source/DeveloperGuide) for more details.
+
 
 ## Other information:
 internal GitLab commit ID: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307
