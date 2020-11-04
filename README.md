@@ -47,19 +47,7 @@ Support Operating System
 * **VxWorks (by request)** 
 * **QNX (by request)**
 
-  
-   
-<br>
-
-## Release update:
-* Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA4.0%2FSEMA4.0.1_Win10_64bit_20200520.zip)
-* Version: 4.0.1
-* Includes 
-  * SEMA Utility  with commandline ( provide this source for your reference)
-  * EAPI library
-  * SEMA Win10 Driver with the digital signed
-* update date: 2020/05/20
-* md5 info: 1bbaf4323b7becbf7e23930534b297ae
+ 
 
 
 <br>
