@@ -55,7 +55,7 @@ Support Operating System
 * Windows 10 64bit Installer: [download link](https://hq0epm0west0us0storage.blob.core.windows.net/public/SEMA4.0%2FSEMA4.0.1_Win10_64bit_20200520.zip)
 * Version: 4.0.1
 * Includes 
-  * SEMA Uility with commandline ( provide this source for your reference)
+  * SEMA Utility  with commandline ( provide this source for your reference)
   * EAPI library
   * SEMA Win10 Driver with the digital signed
 * update date: 2020/05/20
