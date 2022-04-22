@@ -4,7 +4,7 @@
 
 <img src="https://cdn.adlinktech.com/webupd/en/Upload/ProductNews/logo_sema.png" alt="sema_logo" width="30%" align="right"  />
 
-## What is SEMA 4.0?
+### What is SEMA 4.0?
 
 **The Smart Embedded Management Agent (SEMA®)** 
 
@@ -16,8 +16,28 @@ SEMA® provides a ready-made application that shows the data in user-friendly gr
 for supervision and troubleshooting.
 
 
+<br>
 
-Features
+Release Update
+--------------
+
+* v4.2.0 (https://github.com/ADLINK/sema-windows/releases/tag/v4.2.0)
+  * This release is only supported for the following hardware:
+    - cExpress-TL / cExpress-EL / cExpress-AR
+    - Express-ID7 / Express-ADP / Express-TL
+    - COM-HPC-cADP / COM-HPC-sIDH
+    - LEC-EL
+    - nanoX-EL
+
+    Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
+
+ 
+
+
+<br>
+
+
+Feature Set
 ----------
 
 SEMA® is designed to be:
@@ -33,21 +53,6 @@ SEMA® is designed to be:
 
 
 Detailed forensic information is available after system or module failures. The BMC Power-Up Error Log function provides detailed information about history of failures that may have occurred during power-up sequences. Log information includes e.g. error number, flags, restart event, power cycles, boot count, status, CPU temperature and board temperature. Moreover minimum and maximum temperature of the CPU and system is available to analyze system or module failure in detail.
-
-
-
-Support Operating System
---------------------------
-* **Windows OS**
-      Windows 10 64bit
-* **Linux OS**
-       Kernel 4.4 or above
-* **Yocto Linux**  
-      sema meta layer: https://github.com/ADLINK/meta-adlink-sema
-* **VxWorks (by request)** 
-* **QNX (by request)**
-
- 
 
 
 <br>
