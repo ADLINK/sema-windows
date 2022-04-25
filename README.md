@@ -29,7 +29,7 @@ Release Update
     - LEC-EL
     - nanoX-EL
 
-    Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
+Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
 
  
 
