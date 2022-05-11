@@ -69,7 +69,5 @@ Detailed forensic information is available after system or module failures. The 
 * See [documentation](https://adlinktech.github.io/sema-doc/#/source/DeveloperGuide) for more details.
 
 
-## Other information:
-internal GitLab commit ID: 87af66651e6e7edd90e7831ebbb4ab5cc0aa9307
 
    
