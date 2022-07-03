@@ -38,7 +38,9 @@ Release Update
 
 Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
 
-
+how to install:
+----
+* see [documentation](https://adlinktech.github.io/sema/HowToInstallonWindows.html) for more details
 
 Feature Set
 ----------
@@ -54,11 +56,8 @@ SEMA® is designed to be:
 * GPIO Control (only support PCA9535 I/O expander)
 * Watch Dog  
 
-
-## how to install:
-* see [documentation](https://adlinktech.github.io/sema/HowToInstallonWindows.html) for more details
-
-## Developer's Guide: 
+Developer's Guide: 
+----
 * See [documentation](https://adlinktech.github.io/sema/DeveloperGuide.html) for more details.
 
 
