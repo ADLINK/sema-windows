@@ -14,6 +14,13 @@ A Board Management Controller is embedded on our hardware and collects all relev
 SEMA® middleware is on the top of Board controller that provides a ready-made application that shows the data in user-friendly graphic interfaces, suitable for supervision and troubleshooting.
 
 
+Architecture Overview
+-----
+
+SEMA EAPI Library provides you the interface which can be accessed to the drivers and controllers
+<br>
+    <strong>Note:</strong> EAPI (Embedded API) library: PICMG® organization defined the software specification on COM Express for the industrial applications. Here is the available specification https://www.picmg.org/wp-content/uploads/COM_EAPI_R1_0.pdf for your reference.
+
 
 Release Update
 --------------
