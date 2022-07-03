@@ -17,6 +17,9 @@ SEMA® middleware is on the top of Board controller that provides a ready-made a
 Architecture Overview
 -----
 
+
+<img src="https://adlinktech.github.io/sema/index.assets/image-20220701234314926.png"  width="500" />
+
 SEMA EAPI Library provides you the interface which can be accessed to the drivers and controllers
 <br>
     <strong>Note:</strong> EAPI (Embedded API) library: PICMG® organization defined the software specification on COM Express for the industrial applications. Here is the available specification https://www.picmg.org/wp-content/uploads/COM_EAPI_R1_0.pdf for your reference.
