@@ -32,7 +32,7 @@ SEMA EAPI Library provides you the interface which can be accessed to the driver
 Release Update
 --------------
 
-* **v4.2.1: click [here](https://github.com/ADLINK/sema-windows/releases/tag/v4.2.1) to download the latest release !**
+* **v4.2.4: click [here](https://github.com/ADLINK/sema-windows/releases/tag/v4.2.4) to download the latest release !**
   * This release is only supported for the following hardware:
     - cExpress-TL / cExpress-EL / cExpress-AR
     - Express-ID7 / Express-ADP / Express-TL
