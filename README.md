@@ -32,13 +32,18 @@ SEMA EAPI Library provides you the interface which can be accessed to the driver
 Release Update
 --------------
 
-* **v4.2.4: click [here](https://github.com/ADLINK/sema-windows/releases/tag/v4.2.4) to download the latest release !**
-  * This release is only supported for the following hardware:
-    - cExpress-TL / cExpress-EL / cExpress-AR
-    - Express-ID7 / Express-ADP / Express-TL
-    - COM-HPC-cADP / COM-HPC-sIDH
-    - LEC-EL
-    - nanoX-EL
+The Latest release: **v4.2.4**: click [here](https://github.com/ADLINK/sema-windows/releases/tag/v4.2.4) to download
+
+This release is supported in the following hardware:
+* cExpress-TL / cExpress-EL / cExpress-AR
+* Express-ID7 / Express-ADP / Express-TL
+* Express-CF/CFR, Express-KL/KLE, Express-SL/SLE, Express-DN7, Express-BD7
+* cExpress-WL, cExpress-KL, cExpress-SL, cExpress-AL
+* COM-HPC-cADP / COM-HPC-sIDH
+* LEC-EL / LEC-AL
+* NanoX-EL / NanoX-AL
+* Q7-AL
+
 
 Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
 
