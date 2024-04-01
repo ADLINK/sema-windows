@@ -1,74 +1,86 @@
-<br>
 
-What is SEMA?
------
-<img src="https://cdn.adlinktech.com/webupd/en/Upload/ProductNews/logo_sema.png" alt="sema_logo" width="20%" align="right"  />
 
+# What is SEMA?
 
 **The Smart Embedded Management Agent (SEMA®)**
 
-Downtime of devices or systems is not acceptable in today's industries. To help customers to analyze their systems and take counter measures for preventive maintenance. We provide the solution which is able to monitor and collect system performance and status information from the hardware in a timely.
+Downtime of devices or systems is not acceptable in today's industries. To help customers analyze their systems and take countermeasures for preventive maintenance, we provide a solution that can promptly monitor and promptly collect system performance and status information from the hardware.
 
-A Board Management Controller is embedded on our hardware and collects all relevant technical information from the chipset through the different communication interfaces such as eSPI, I2C and SMBus.
+A Board Management Controller is embedded in our hardware and collects all relevant technical information from the chipset through different communication interfaces, such as eSPI, I2C, and SMBus.
 
-SEMA® middleware is on the top of Board controller that provides a ready-made application that shows the data in user-friendly graphic interfaces, suitable for supervision and troubleshooting.
+SEMA® middleware is on top of the Board controller. It provides a ready-made application that shows the data in user-friendly graphic interfaces suitable for supervision and troubleshooting.
 
-Important Notice
------
-SEMA4.0 would be designed the abstraction layer to integrate the different controllers (EC, TivaBCC and LiteBMC) and this integration will be ready in Q4 2022.
+## 1. Architecture Overview
 
-
-Architecture Overview
------
+<img src="Pictures.assets/picture1.png" width="50%"/>
 
 
-<img src="https://adlinktech.github.io/sema/index.assets/image-20220701234314926.png"  width="500" />
+SEMA EAPI Library provides you with an interface that the drivers and controllers can access.
 
-SEMA EAPI Library provides you the interface which can be accessed to the drivers and controllers
-<br>
-    <strong>Note:</strong> EAPI (Embedded API) library: PICMG® organization defined the software specification on COM Express for the industrial applications. Here is the available specification https://www.picmg.org/wp-content/uploads/COM_EAPI_R1_0.pdf for your reference.
+**Note:** EAPI (Embedded API) library: PICMG® organization defined the software specification on COM Express for the industrial applications. Here is the available specification https://www.picmg.org/wp-content/uploads/COM_EAPI_R1_0.pdf for your reference.
 
+## 2. Feature Set
 
-Release Update
---------------
+SEMA® is designed to monitor and access the following features on ADLINK boards.
 
-The Latest release: **v4.2.7**: click [here](https://github.com/ADLINK/sema-windows/releases/tag/v4.2.7) to download
+1) Power consumption
+2) User area access
+3) I2C control
+4) Monitoring the temperature of the CPU and board
+5) Accessing board information
 
-This release is supported in the following hardware:
-* cExpress-TL / cExpress-EL / cExpress-AR
-* Express-ID7 / Express-ADP / Express-TL
-* Express-CF/CFR, Express-KL/KLE, Express-SL/SLE, Express-DN7, Express-BD7
-* cExpress-WL, cExpress-KL, cExpress-SL, cExpress-AL
-* COM-HPC-cADP / COM-HPC-sIDH
-* LEC-EL / LEC-AL
-* NanoX-EL / NanoX-AL
-* Q7-AL / Q7-EL
+​	a)   Serial number of the board
 
+​	b)  Part number of the board
 
-Note: Working on the integration of the different the board controllers (EC, TivaBMC, LiteBMC) into the same framework.
+​	c)   The version of the firmware
 
-how to install:
-----
-* see [documentation](https://adlinktech.github.io/sema/HowToInstallonWindows.html) for more details
+6) Fan control
+7) GPIO access for the expander
 
-Feature Set
-----------
+​	a)   PCA9535
 
-SEMA® is designed to be:
+​	b)  SX1509
 
-* Power Consumption
-* User Area Access
-* I2C Control 
-* Temperatures (CPU and Board)
-* Board Information (Serial Number, Part Number, Firmware Version...)
-* Fan Control
-* GPIO Control (only support PCA9535 I/O expander)
-* Watch Dog  
+8) Watchdog
 
-Developer's Guide: 
-----
-* See [documentation](https://adlinktech.github.io/sema/DeveloperGuide.html) for more details.
+​	a)   Run-time watchdog
 
 
+
+## 3. Supported Hardware
+
+The Windows SEMA supports EC, Tiva BMC, and Lite BMC-based boards and different form factors, such as cExpress, Express, COM-HPC, and SMARC.
+
+### 3.1 cExpress
+
+* cExpress-TL, cExpress-EL, cExpress-AR, cExpress-WL, cExpress-KL, cExpress-SL, cExpress-AL
+
+### 3.2 Express
+
+* Express-ID7, Express-ADP, Express-TL, Express-CF/CFR, Express-KL/KLE, Express-SL/SLE, 
+* Express-DN7, Express-BD7
+
+### 3.3 COM-HPC
+
+* COM-HPC-cADP, COM-HPC-sIDH
+
+### 3.4 SMARC
+
+* LEC-EL, LEC-AL
+
+### 3.5 NanoX
+
+* NanoX-EL, NanoX-AL
+
+### 3.6 Q7
+
+* Q7-AL, Q7-EL
+
+
+
+## 4. Software Documentation
+
+* [SEMA Installation Guide for Windows]()
 
    
