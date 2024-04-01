@@ -4,7 +4,7 @@
 
 **The Smart Embedded Management Agent (SEMA®)**
 
-Downtime of devices or systems is not acceptable in today's industries. To help customers analyze their systems and take countermeasures for preventive maintenance, we provide a solution that can promptly monitor and promptly collect system performance and status information from the hardware.
+Downtime of devices or systems is not acceptable in today's industries. To help customers analyze their systems and take countermeasures for preventive maintenance, we provide a solution that can promptly monitor and collect system performance and status information from the hardware.
 
 A Board Management Controller is embedded in our hardware and collects all relevant technical information from the chipset through different communication interfaces, such as eSPI, I2C, and SMBus.
 
@@ -12,7 +12,9 @@ SEMA® middleware is on top of the Board controller. It provides a ready-made ap
 
 ## 1. Architecture Overview
 
-<img src="Pictures.assets/picture1.png" width="50%"/>
+<p align="center">
+<img src="pictures.assets/picture1.png" width="50%"/>
+</p>
 
 
 SEMA EAPI Library provides you with an interface that the drivers and controllers can access.
@@ -27,26 +29,12 @@ SEMA® is designed to monitor and access the following features on ADLINK boards
 2) User area access
 3) I2C control
 4) Monitoring the temperature of the CPU and board
-5) Accessing board information
-
-​	a)   Serial number of the board
-
-​	b)  Part number of the board
-
-​	c)   The version of the firmware
-
+5) Accessing board information(Serial number, Part number, Version of the firmware)
 6) Fan control
-7) GPIO access for the expander
 
-​	a)   PCA9535
-
-​	b)  SX1509
+7) GPIO access for the expander(PCA9535, SX1509)
 
 8) Watchdog
-
-​	a)   Run-time watchdog
-
-
 
 ## 3. Supported Hardware
 
