@@ -13,7 +13,7 @@ SEMA® middleware is on top of the Board controller. It provides a ready-made ap
 ## 1. Architecture Overview
 
 <p align="center">
-<img src="pictures.assets/picture1.png" width="50%"/>
+<img src="readme.assets/picture1.png" width="50%"/>
 </p>
 
 
