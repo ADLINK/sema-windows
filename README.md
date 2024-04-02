@@ -69,6 +69,6 @@ The Windows SEMA supports EC, Tiva BMC, and Lite BMC-based boards and different 
 
 ## 4. Software Documentation
 
-* [SEMA Installation Guide for Windows]()
+* [SEMA Installation Guide for Windows](https://github.com/ADLINK/sema-windows/wiki)
 
    
