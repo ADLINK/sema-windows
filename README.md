@@ -31,43 +31,10 @@ SEMA® is designed to monitor and access the following features on ADLINK boards
 4) Monitoring the temperature of the CPU and board
 5) Accessing board information(Serial number, Part number, Version of the firmware)
 6) Fan control
-
 7) GPIO access for the expander(PCA9535, SX1509)
-
 8) Watchdog
 
-## 3. Supported Hardware
-
-The Windows SEMA supports EC, Tiva BMC, and Lite BMC-based boards and different form factors, such as cExpress, Express, COM-HPC, and SMARC.
-
-### 3.1 cExpress
-
-* cExpress-TL, cExpress-EL, cExpress-AR, cExpress-WL, cExpress-KL, cExpress-SL, cExpress-AL
-
-### 3.2 Express
-
-* Express-ID7, Express-ADP, Express-TL, Express-CF/CFR, Express-KL/KLE, Express-SL/SLE, 
-* Express-DN7, Express-BD7
-
-### 3.3 COM-HPC
-
-* COM-HPC-cADP, COM-HPC-sIDH
-
-### 3.4 SMARC
-
-* LEC-EL, LEC-AL
-
-### 3.5 NanoX
-
-* NanoX-EL, NanoX-AL
-
-### 3.6 Q7
-
-* Q7-AL, Q7-EL
-
-
-
-## 4. Software Documentation
+## 3. Software Documentation
 
 * [SEMA Installation Guide for Windows](https://github.com/ADLINK/sema-windows/wiki)
 
