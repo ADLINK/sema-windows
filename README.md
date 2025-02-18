@@ -36,6 +36,6 @@ SEMA® is designed to monitor and access the following features on ADLINK boards
 
 ## 3. Software Documentation
 
-* [SEMA Installation Guide for Windows](https://github.com/ADLINK/sema-windows/wiki)
+* [SEMA Installation Guide for Windows](https://www.adlinktech.com/Products/DownloadMDownload?lang=en&pdNo=1274&MainCategory=Industrial_IoT_and_Cloud_solutions&kind=M)
 
    
