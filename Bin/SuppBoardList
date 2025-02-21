@@ -1,0 +1,31 @@
+[
+	"EL"{
+		"BoardName" : "cExpress-EL",
+		"Manufacturer" : "ADLINK Technology Inc.",
+	},
+	"EL"{
+		"BoardName" : "NanoX-EL",
+		"Manufacturer" : "ADLINK Technology Inc.",
+		"ExeTbl" : "NOERROR#INVALID#NO_SUSCLK#NO_SLP_S5#NO_SLP_S4#NO_SLP_S3#BIOS_FAIL#RESET_FAIL#RESETIN_FAIL#NO_CB_PWROK#CRITICAL_TEMP#POWER_FAIL#VOLTAGE_FAIL#RSMRST_PG#NO_VDDQ_PG#NO_1V2A_PG#NO_VCORE_PG#NO_SYS_GD#NO_V5SBY#NO_V3P3A#NO_V5_DUAL#NO_PWRSRC_GD#NO_P_5V_3V3_S0_PG#NO_SAME_CHANNEL#NO_PCH_PG",	
+	},
+	"TL"{
+		"BoardName" : "cExpress-TL",
+		"Manufacturer" : "ADLINK Technology Inc.",
+	},
+	"TL"{
+		"BoardName" : "Express-TL",
+		"Manufacturer" : "ADLINK Technology Inc.",
+	},
+
+	"AR"{
+		"BoardName" : "cExpress-AR",
+		"Manufacturer" : "ADLINK Technology Inc.",
+	},
+
+	"<Example> alias_platform_name" {
+		"Boardname" : "Board name in EC firmware version 0xA0 to AF",
+		"Manufacturer" : "Adlink Technology Inc. <unused>",
+		"AIN" : "voltage descriptions seperated with #",
+		"ExeTbl" : "exception description separated with #"
+	}
+]

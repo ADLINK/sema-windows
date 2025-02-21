@@ -1,0 +1,75 @@
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%ManufacturerName%
+CatalogFile=Sema4.cat
+DriverVer= 2.0.0.0
+
+[DestinationDirs]
+DefaultDestDir = 12
+Sema4_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Sema4.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%Sema4.DeviceDesc%=Sema4_Device, root\sema
+
+[Sema4_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+Sema4.sys
+
+;-------------- Service installation
+[Sema4_Device.NT.Services]
+AddService = Sema4,%SPSVCINST_ASSOCSERVICE%, Sema4_Service_Inst
+
+; -------------- Sema4 driver install sections
+[Sema4_Service_Inst]
+DisplayName    = %Sema4.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\Sema4.sys
+
+;
+;--- Sema4_Device Coinstaller installation ------
+;
+
+[Sema4_Device.NT.CoInstallers]
+AddReg=Sema4_Device_CoInstaller_AddReg
+CopyFiles=Sema4_Device_CoInstaller_CopyFiles
+
+[Sema4_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[Sema4_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[Sema4_Device.NT.Wdf]
+KmdfService =  Sema4, Sema4_wdfsect
+[Sema4_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="ADLINK Technology Inc." 
+ClassName="SEMA 4.0 Driver" 
+DiskName = "SEMAv4.0 Installation Disk"
+Sema4.DeviceDesc = "SEMA Device"
+Sema4.SVCDESC = "SEMAv4.0 Service"
