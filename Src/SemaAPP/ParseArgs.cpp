@@ -86,6 +86,8 @@ void ShowHelp(int condition)
 		printf("\nUsage:\n");
 		printf("- Display this screen:\n");
 		printf("	semautil /h\n");
+		printf("\n- Version:\n");
+		printf("	semautil version for more help related to SEMA version\n");
 		
 		printf("\n- System monitor-Board Info:\n");
 		printf("	semautil /i    for more help related to system monitor-board information functions\n");
@@ -1828,6 +1830,10 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 		{
 			help_condition = 12;
 		}
+	}
+	else if (argc == 2 && (_stricmp(argv[1], "version") == 0))
+	{
+		Args->GtVersion = TRUE;
 	}
 	else
 	{

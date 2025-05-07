@@ -134,10 +134,10 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				printf("\nSEMA Library Version : % s\n", formattedNum);
 				break;
 			case EAPI_ID_HWMON_CPU_TEMP:
-				printf("\nCPU temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nCPU temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_ID_HWMON_SYSTEM_TEMP:
-				printf("\nSystem Temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nSystem Temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_ID_HWMON_VOLTAGE_VCORE:
 				printf("\nCPU Core Voltage: %d mV\n", Args->SemaNativeFuncArgs.IntData);
@@ -274,22 +274,22 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				printf("\n");
 				break;
 			case EAPI_SEMA_ID_BOARD_SYSTEM_MIN_TEMP:
-				printf("\nBoard minimum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard minimum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_SYSTEM_MAX_TEMP:
-				printf("\nBoard maximum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard maximum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_SYSTEM_STARTUP_TEMP:
-				printf("\nBoard startup temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard startup temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_CPU_MIN_TEMP:
-				printf("\nCPU minimum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nCPU minimum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_CPU_MAX_TEMP:
-				printf("\nCPU maximum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nCPU maximum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_CPU_STARTUP_TEMP:
-				printf("\nCPU startup temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nCPU startup temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_MAIN_CURRENT:
 				printf("\nMain power current: %d mA\n", Args->SemaNativeFuncArgs.IntData);
@@ -313,16 +313,16 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				printf("\nSystem Fan 3 speed: %d RPM\n", Args->SemaNativeFuncArgs.IntData);
 				break;
 			case EAPI_SEMA_ID_BOARD_2ND_SYSTEM_TEMP:
-				printf("\nBoard 2nd Current temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard 2nd Current temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_2ND_SYSTEM_MIN_TEMP:
-				printf("\nBoard 2nd minimum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard 2nd minimum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_2ND_SYSTEM_MAX_TEMP:
-				printf("\nBoard 2nd maximum temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard 2nd maximum temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_2ND_SYSTEM_STARTUP_TEMP:
-				printf("\nBoard 2nd startup temperature: %.2lf C\n", (Args->SemaNativeFuncArgs.IntData - 2731) * 0.1);
+				printf("\nBoard 2nd startup temperature: %u K (%u C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(Args->SemaNativeFuncArgs.IntData));
 				break;
 			case EAPI_SEMA_ID_BOARD_POWER_CYCLE:
 				printf("\nPower cycle counter: %d\n", Args->SemaNativeFuncArgs.IntData);
@@ -1187,6 +1187,19 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 		char buffer[50] = { 0 };
 		if ((sts = SemaEApiBoardGetVoltageMonitor(Args->SemaNativeFuncArgs.channel, &(Args->SemaNativeFuncArgs.voltage), buffer)) == EAPI_STATUS_SUCCESS)
 		{
+			if ((Args->SemaNativeFuncArgs.voltage < 2000) && (strcmp(buffer, "RTC") == 0))
+			{
+				Args->SemaNativeFuncArgs.Size = 100;
+				if ((sts = EApiBoardGetStringA(EAPI_ID_BOARD_NAME_STR, (Args->SemaNativeFuncArgs.pData), &Args->SemaNativeFuncArgs.Size)) == EAPI_STATUS_SUCCESS)
+				{
+					if ((strncmp((const char*)Args->SemaNativeFuncArgs.pData, "VPX6200", strlen("VPX6200"))) == 0)
+					{
+						printf("\nVoltage: Low BAT / No BAT\nDescription: %s\n", buffer);
+						return EAPI_STATUS_SUCCESS;
+					}
+				}
+			}
+
 			if (strstr(buffer, "Current") != 0)
 				printf("\nCurrent : %d mA \nDescription : %s\n", Args->SemaNativeFuncArgs.voltage, buffer);
 			else
@@ -1455,6 +1468,12 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 		return sts;
 	}
 
+	if (Args->GtVersion)
+	{
+		printf("\nSEMA Version : %s\n", EAPI_CURRENT_SEMA_VERSION);
+		return 0;
+	}
+
 	return sts;
 }
 
@@ -1545,7 +1564,7 @@ int main(int argc, char* argv[])
 		break;
 	}	
 
-	EApiUnInitialize();
+	EApiLibUnInitialize();
 
 	if (sts == EAPI_STATUS_SUCCESS)
 	{

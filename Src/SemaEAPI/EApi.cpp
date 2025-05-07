@@ -61,7 +61,7 @@ out:
 	return Status;
 }
 
-uint32_t EApiUnInitialize(void)
+uint32_t EApiLibUnInitialize(void)
 {
 	Ccmn.Close();
 

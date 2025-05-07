@@ -44,7 +44,7 @@
 
 #define EAPI_MANUFACTURE "ADLINK Technology Inc."
 
-
+#define EAPI_CURRENT_SEMA_VERSION	"ADLINK-SEMA-EC/BMC-WINDOWS-V4_R2_11_25_05_07"
 /*
 **G P I O*
 */
@@ -214,8 +214,8 @@ V A L U E S
 #define EAPI_SEMA_ID_HWMON_FAN_SYSTEM_3			EAPI_UINT32_C(0x22007)
 
 #define EAPI_KELVINS_OFFSET 2731
-#define EAPI_ENCODE_CELCIUS(Celsius) EAPI_UINT32_C((((Celsius)*10))+EAPI_KELVINS_OFFSET)
-#define EAPI_DECODE_CELCIUS(Celsius) ((Celsius)- EAPI_KELVINS_OFFSET)/10
+#define EAPI_ENCODE_CELCIUS(Celsius) EAPI_UINT32_C((((Celsius)*10))+EAPI_KELVINS_OFFSET)	//To convert Celsius to Kelvin
+#define EAPI_DECODE_CELCIUS(Celsius) ((Celsius)- EAPI_KELVINS_OFFSET)/10					//To convert Kelvin to Celsius
 
 
 /*
@@ -300,8 +300,9 @@ I 2 C
 #define EAPI_I2C_IS_NO_CMD(x)  (EAPI_UINT32_C((x) & (EAPI_I2C_CMD_TYPE_MASK)) == EAPI_I2C_NO_CMD)
 
 
+
 SEMAEAPI_API uint32_t EApiLibInitialize(void);
-SEMAEAPI_API uint32_t EApiUnInitialize(void);
+SEMAEAPI_API uint32_t EApiLibUnInitialize(void);
 
 SEMAEAPI_API uint32_t SemaEApiLibInitialize(void);
 SEMAEAPI_API uint32_t SemaEApiUnInitialize(void);

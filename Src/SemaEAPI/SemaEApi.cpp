@@ -708,7 +708,7 @@ uint32_t SemaEApiLibInitialize(void)
 
 uint32_t SemaEApiUnInitialize(void)
 {
-	return EApiUnInitialize();
+	return EApiLibUnInitialize();
 }
 
 uint32_t SemaEApiWDogGetLastValue(uint32_t *LastValue)
