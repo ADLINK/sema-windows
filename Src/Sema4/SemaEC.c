@@ -10,9 +10,26 @@ int ReadEc_(UINT16 RegionIndex, UINT16 offset, unsigned char *data)
 {
 	volatile int retry, limit = 100;
 	volatile unsigned char EC_SC_D, EC_DA_D;
+	char Cmd;
 	
 	PUCHAR EC_SC = (PUCHAR)(RegionIndex & 0xFF);
 	PUCHAR EC_DATA = (PUCHAR)((RegionIndex >> 8) & 0xFF);
+	Cmd = EC_SC_RD_CMD;
+
+	if (Ec_Region != EC_REGION_1 && Ec_Region != EC_REGION_2)
+	{
+		Cmd = EC_SC_RD_CMD + 0x10;
+	}
+
+	if (RegionIndex == EC_REGION_1)
+	{
+		if (Ec_Region == EC_REGION_2)
+		{
+			EC_SC = (PUCHAR)(EC_REGION_2 & 0xFF);
+			EC_DATA = (PUCHAR)((EC_REGION_2 >> 8) & 0xFF);
+			Cmd = EC_SC_RD_CMD + 0x10;
+		}
+	}
 
 	for (retry = 0; retry < limit; retry++)
 	{
@@ -29,7 +46,7 @@ int ReadEc_(UINT16 RegionIndex, UINT16 offset, unsigned char *data)
 		return -1;
 	}
 
-	WRITE_PORT_UCHAR(EC_SC, EC_SC_RD_CMD);
+	WRITE_PORT_UCHAR(EC_SC, Cmd);
 
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "1st IBF check\n");
 
@@ -109,9 +126,21 @@ int WriteEc_(UINT16 RegionIndex, UINT16 offset, unsigned char data)
 {
 	volatile int retry, limit = 100;
 	volatile unsigned char EC_SC_D;
+	char Cmd;
 
 	PUCHAR EC_SC = (PUCHAR)(RegionIndex & 0xFF);
 	PUCHAR EC_DATA = (PUCHAR)((RegionIndex >> 8) & 0xFF);
+	Cmd = EC_SC_WR_CMD;
+
+	if (RegionIndex == EC_REGION_1)
+	{
+		if (Ec_Region == EC_REGION_2)
+		{
+			EC_SC = (PUCHAR)(EC_REGION_2 & 0xFF);
+			EC_DATA = (PUCHAR)((EC_REGION_2 >> 8) & 0xFF);
+			Cmd = EC_SC_WR_CMD + 0x10;
+		}
+	}
 
 	for (retry = 0; retry < limit; retry++)
 	{
@@ -128,7 +157,7 @@ int WriteEc_(UINT16 RegionIndex, UINT16 offset, unsigned char data)
 		return -1;
 	}
 
-	WRITE_PORT_UCHAR(EC_SC, EC_SC_WR_CMD);
+	WRITE_PORT_UCHAR(EC_SC, Cmd);
 
 	TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "1st IBF check\n");
 

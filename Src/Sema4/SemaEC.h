@@ -17,6 +17,8 @@
 #define EC_REGION_1   ((0x62 << 8) | 0x66)
 #define EC_REGION_2   ((0x68 << 8) | 0x6C)
 
+unsigned short Ec_Region;
+
 NTSTATUS EC_Read_Transfer(WDFDEVICE pDevice, PEC_COMMAND pCmd, BYTE* Buffer, UINT32 nDataOut, ULONG* pulRet);
 NTSTATUS EC_Write_Transfer(WDFDEVICE pDevice, PEC_COMMAND pCmd, BYTE* Buffer, UINT32 nDataOut, ULONG* pulRet);
 int Adl_PortRead(unsigned short in_ucPortAddr, unsigned char *in_pucData);

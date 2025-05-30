@@ -144,31 +144,44 @@ UINT8 IsECDeviceExist(WDFDEVICE pDevice)
 	EC_COMMAND  BufCmdInEC; NTSTATUS eRet;
 
 	BufCmdInEC.bAddr = 0xF0;
-	BufCmdInEC.RegionIndex = ((0x62 << 8) | 0x66);
+	BufCmdInEC.RegionIndex = ((0x68 << 8) | 0x6C);
 	BufCmdInEC.bLength = 16;
-	if ((eRet = EC_Read_Transfer(pDevice, &BufCmdInEC, (BYTE*)buffer, (UINT32)16, &ulRet)) == STATUS_SUCCESS)
+	if ((eRet = EC_Read_Transfer(pDevice, &BufCmdInEC, (BYTE*)buffer, (UINT32)16, &ulRet)) != STATUS_SUCCESS)
 	{
-		if (strstr(buffer, "ADLINK") != NULL)
+		BufCmdInEC.RegionIndex = ((0x62 << 8) | 0x66);
+		Ec_Region = BufCmdInEC.RegionIndex;
+		if ((eRet = EC_Read_Transfer(pDevice, &BufCmdInEC, (BYTE*)buffer, (UINT32)16, &ulRet)) == STATUS_SUCCESS)
 		{
-			return 1;
+			TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "EC_Region1 selected = %s\n", buffer);
+			Ec_Region = BufCmdInEC.RegionIndex;
 		}
-		else
+	}
+	else
+	{
+		TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "EC_Region2 selected = %s\n",buffer);
+		Ec_Region = BufCmdInEC.RegionIndex;
+	}
+
+	if (strstr(buffer, "ADLINK") != NULL)
+	{
+		return 1;
+	}
+	else
+	{
+		/*Reading the address 0xEA*/
+		BufCmdInEC.bAddr = 0xEA;
+		BufCmdInEC.RegionIndex = ((0x62 << 8) | 0x66);
+		BufCmdInEC.bLength = 1;
+		if ((eRet = EC_Read_Transfer(pDevice, &BufCmdInEC, (BYTE*)&status, (UINT32)1, &ulRet)) == STATUS_SUCCESS)
 		{
-			/*Reading the address 0xEA*/
-			BufCmdInEC.bAddr = 0xEA;
-                	BufCmdInEC.RegionIndex = ((0x62 << 8) | 0x66);
-                	BufCmdInEC.bLength = 1;
-			if ((eRet = EC_Read_Transfer(pDevice, &BufCmdInEC, (BYTE*)&status, (UINT32)1, &ulRet)) == STATUS_SUCCESS)
-        		{
-				/*Checking the address 0xEA for value 0x34*/
-            			if (status != 0x34)
-            			{
-                			return 0;
-            			}
-				else
-				{
-					return 1; 
-				}	
+			/*Checking the address 0xEA for value 0x34*/
+			if (status != 0x34)
+			{
+				return 0;
+			}
+			else
+			{
+				return 1;
 			}
 		}
 	}
