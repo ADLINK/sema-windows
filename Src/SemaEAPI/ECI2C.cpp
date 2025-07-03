@@ -88,7 +88,7 @@ EERROR CECFunct::I2CWaitForFree(void)
 	int i; 
 	uint8_t Status;
     
-	for (i = 0; i < 200; i++)
+	for (i = 0; i < 100000; i++)
 	{
 		if (m_clsECTrans.ECRead(EC_RW_ADDR_IIC_BMC_STATUS, EC_REGION_2, &Status, 1) == EAPI_STATUS_SUCCESS)
 		{	
@@ -97,7 +97,7 @@ EERROR CECFunct::I2CWaitForFree(void)
 				return EAPI_STATUS_SUCCESS;
 			}		
 		}
-		sleep_for(microseconds(50));
+		//sleep_for(microseconds(50));
 	}
 	
 	return EAPI_STATUS_ERROR;

@@ -118,7 +118,7 @@ class Ccommon_bmc
 
 #define SEMA_VERSION_MAJOR	0x04
 #define SEMA_VERSION_MINOR	0x02
-#define SEMA_VERSION_ADDON  0x12
+#define SEMA_VERSION_ADDON  0x13
 #define SEMA_VERSION_ADDON_STR  "R0"
 #define SEMA_VENDOR			"ADLINK Technology Inc."
 
