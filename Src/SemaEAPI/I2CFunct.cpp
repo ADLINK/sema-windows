@@ -1354,3 +1354,8 @@ EERROR CI2CFunct::SetBIOSSource(uint8_t bIndex)
 #endif
 	return EAPI_STATUS_SUCCESS;
 }
+
+EERROR CI2CFunct::SMBusBlockTrans(uint8_t bAddr, uint8_t bType, uint8_t bCmd, uint8_t* pBufIn, uint32_t nInLen, uint8_t* pDataRet, uint32_t& nRetLen)
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}

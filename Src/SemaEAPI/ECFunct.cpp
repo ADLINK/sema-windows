@@ -133,6 +133,7 @@ EERROR CECFunct::Init()
 
 	for (i = 0; i < (sizeof(DescriptorList) / sizeof(DescriptorList[0])) && DescriptorList[i] != NULL; i++)
 	{
+		memset(m_tbDesc[i], 0, 25);
 		memcpy_s(m_tbDesc[i], 25, DescriptorList[i], strlen(DescriptorList[i]));
 		m_nTotalChannel++;
 	}
@@ -521,10 +522,14 @@ EERROR CECFunct::GetVoltDescEx(uint8_t bChannel, char* pData)
 	return EAPI_STATUS_ERROR;
 }
 
-
 EERROR CECFunct::GetErrorDesc(uint32_t nErrorCode, uint8_t* pData, uint32_t* pnDataSize)
 {
-	if ((nErrorCode > ExcepDescLength) || (strcmp(ExcepDescList[nErrorCode], "INVALID") == 0))
+	if (nErrorCode >= ExcepDescLength)
+	{
+		return EAPI_STATUS_ERROR;
+	}
+
+	if (ExcepDescList[nErrorCode] == nullptr || strcmp(ExcepDescList[nErrorCode], "INVALID") == 0)
 	{
 		return EAPI_STATUS_ERROR;
 	}
@@ -704,6 +709,11 @@ EERROR CECFunct::GetBootVersionExt(char* szVersion, uint32_t nLen)
 }
 
 EERROR CECFunct::GetBMCStatus(uint8_t* pBMCStatus)
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}
+
+EERROR CECFunct::SMBusBlockTrans(uint8_t bAddr, uint8_t bType, uint8_t bCmd, uint8_t* pBufIn, uint32_t nInLen, uint8_t* pDataRet, uint32_t& nRetLen)
 {
 	return EAPI_STATUS_UNSUPPORTED;
 }

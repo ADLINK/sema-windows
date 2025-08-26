@@ -676,6 +676,11 @@ uint32_t SemaEApiStorageLock(uint32_t Id)
 		return EAPI_STATUS_INVALID_PARAMETER;
 	}
 
+	if (pBMCFunct->FindCap(SEMA_CAP_BMC_TIVA) != 0)
+	{
+		return EAPI_STATUS_UNSUPPORTED;
+	}
+
 	if ((Status = Ccmn.lock()) != EAPI_STATUS_SUCCESS)
 	{
 		goto out;
@@ -696,6 +701,11 @@ uint32_t SemaEApiStorageUnlock(uint32_t Id, uint32_t Permission, char *Password)
 
 	if (Id != EAPI_ID_STORAGE_SCR && Id != EAPI_ID_STORAGE_ODM) {
 		return EAPI_STATUS_INVALID_PARAMETER;
+	}
+
+	if (pBMCFunct->FindCap(SEMA_CAP_BMC_TIVA) != 0)
+	{
+		return EAPI_STATUS_UNSUPPORTED;
 	}
 
 	return pBMCFunct->UnlockMem(Id, Permission, Password);
@@ -851,4 +861,14 @@ uint32_t SemaEApiI2CWriteTransfer(uint32_t Id, uint32_t Addr, uint32_t Cmd, void
 uint32_t SemaEApiI2CGetBusCap(uint32_t Id, uint32_t *pMaxBlkLen)
 {
 	return EApiI2CGetBusCap(Id, pMaxBlkLen);
+}
+
+uint32_t SemaEApiSMBReadTrans(uint32_t Id, uint16_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt)
+{
+	return EApiSMBReadTrans(Id, Addr, Cmd, pBuffer, BufLen, ByteCnt);
+}
+
+uint32_t SemaEApiSMBWriteTrans(uint32_t Id, uint32_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt)
+{
+	return EApiSMBWriteTrans(Id, Addr, Cmd, pBuffer, BufLen, ByteCnt);
 }

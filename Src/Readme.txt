@@ -1,5 +1,26 @@
-EGW3200/SP-TGL board needs a project property settings change.
+Instructions to build Sema4 solution:
+_____________________________________
 
-Open "Sema4" solution in visual studio. Open "SemaEapi" Library project property. Go to "Configuration Properties-> C/C++ -> Preprocessor" and select "Preprocessor Definitions" option. Add "EGW3200" at the end of "Preprocessor Definitions" and save the project property.
+Note: The Visual Studio setup should have same version of SDK and WDK to build Sema4 solution. 
+The SDK version of each project can be changed in "Configuration properties -> General -> Windows SDK Version" of the respective project
 
-This setting is already enabled in commit "fb2dd17d34d833ff0bf3c0e3c5562fcd4f1ca654"
+
+Build Environment used: 
+SDK Version: 10.1.19041.685
+WDK Version: 10.1.19041.685
+VS Version: Visual Studio Community 2019
+
+
+
+
+To build 64-bit SEMA binaries:
+______________________________
+
+Double click on "Sema4.sln" to open solution in visual studio. Set the Solution Configuration to 'Release' and Solution Platform to 'x64' to build the 64-bit version of Driver, Library and Application.
+
+
+To build 32-bit SEMA binaries:
+______________________________
+
+Double click on "Sema4.sln" to open solution in visual studio. Set the Solution Configuration to 'Release' and Solution Platform to 'x86/Win32' to build the 32-bit version of Library and Application. 
+

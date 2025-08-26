@@ -133,4 +133,7 @@ public:
 	/*******************************Bios Source ****************************************/
 	virtual EERROR GetBIOSSource(uint8_t* pIndex)PURE;
 	virtual EERROR SetBIOSSource(uint8_t pIndex)PURE;
+
+	/*******************************SMBus Access ****************************************/
+	virtual EERROR SMBusBlockTrans(uint8_t, uint8_t, uint8_t, uint8_t*, uint32_t, uint8_t*, uint32_t&) PURE;
 };

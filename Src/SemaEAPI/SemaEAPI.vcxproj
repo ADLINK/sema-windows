@@ -22,7 +22,7 @@
     <ProjectGuid>{BA38B099-F297-46E7-AF69-609E341E0F67}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SemaEAPI</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <ProjectName>SemaEapi</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -119,6 +119,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SEMAEAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalUsingDirectories>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.19041.0;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\lib\x86\store\references\;%(AdditionalUsingDirectories) </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

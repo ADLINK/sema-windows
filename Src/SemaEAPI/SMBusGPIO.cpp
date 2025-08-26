@@ -10,9 +10,13 @@
 #define PCA9535_GPIO_PORT1_OUTPUT_REG		0x03		///< GPIO Input registers
 #define PCA9535_GPIO_PORT1_CON_REG			0x07		///< GPIO Direction registers
 
+#define BMC_BITMASK				0x000000FF
+
 #define PCA9535_INPUT_CAP		0x000000FF
 #define PCA9535_OUTPUT_CAP		0x000000FF
 #define PCA9535_BITMASK			0x000000FF
+
+#define SEMA_C_GPIOS			0x10000000
 
 /* Directions */
 #define PCA9535_GPIO_INPUT   1
@@ -46,10 +50,9 @@ void GPIO_Registry_Write(ULONG value, int GPIO_Dir_Level)
 }
 EERROR CSMBusFunct::GetGPIO(uint32_t* pnGPIO)
 {
-	
+
 	EERROR eRet;
-	uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_INPUT_REG, 0x00, 0x00, 0x00,0x00 };
-	uint8_t bDataRet[4] = { 0x00 }; 
+	uint8_t bDataRet[4] = { 0x00 };
 	uint32_t nRet = 0x04;
 
 	if (m_n_GPIO_Cur_Id != EAPI_GPIO_BANK_ID(0))
@@ -58,21 +61,36 @@ EERROR CSMBusFunct::GetGPIO(uint32_t* pnGPIO)
 	}
 
 	Sleep(50);
-	if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x04, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
-	{
-		*pnGPIO = bDataRet[0];
-		/*
-		nRet = 0x04;
-		pDataIn[0x00] = PCA9535_GPIO_PORT1_INPUT_REG;
-		
-		Sleep(50);
-		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x02, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
-		{
-			*pnGPIO |= (bDataRet[0] << 0x08);
-		}
-		*/
-	}
 
+	if (m_nSemaCaps & SEMA_C_GPIOS)
+	{
+		uint8_t pDataIn[] = { SEMA_CMD_GPIO_READ, 0x00, 0x00, 0x00,0x00 };
+
+		if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, pDataIn[0], NULL, \
+			0x00, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+		{
+			*pnGPIO = bDataRet[0];
+		}
+	}
+	else
+	{
+		uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_INPUT_REG, 0x00, 0x00, 0x00,0x00 };
+
+		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x04, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+		{
+			*pnGPIO = bDataRet[0];
+			/*
+			nRet = 0x04;
+			pDataIn[0x00] = PCA9535_GPIO_PORT1_INPUT_REG;
+
+			Sleep(50);
+			if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x02, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+			{
+				*pnGPIO |= (bDataRet[0] << 0x08);
+			}
+			*/
+		}
+	}
 	return eRet;
 }
 
@@ -89,7 +107,6 @@ EERROR CSMBusFunct::GetGPIODir(uint32_t* pnGPIO, uint32_t nBitMask)
 {
 	
 	EERROR eRet;
-	uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_CON_REG, 0x00, 0x00, 0x00,0x00 };
 	uint8_t bDataRet[4] = { 0x00 };
 	uint32_t nRet = 0x04;
 
@@ -99,29 +116,40 @@ EERROR CSMBusFunct::GetGPIODir(uint32_t* pnGPIO, uint32_t nBitMask)
 	}
 
 	Sleep(50);
-	if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x04, \
-		(uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+
+	if (m_nSemaCaps & SEMA_C_GPIOS)
 	{
-		*pnGPIO = bDataRet[0];
-		/*
-		nRet = 0x04;
-		pDataIn[0x00] = PCA9535_GPIO_PORT1_CON_REG;
-		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x02, \
+		uint8_t pDataIn[] = { SEMA_CMD_GPIO_DIR, 0x00, 0x00, 0x00,0x00 };
+		if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, pDataIn[0], NULL, \
+			0x00, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+		{
+			*pnGPIO = bDataRet[0];
+		}
+	}
+	else
+	{
+		uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_CON_REG, 0x00, 0x00, 0x00,0x00 };
+		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x04, \
 			(uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
 		{
-			*pnGPIO |= (bDataRet[0] << 0x08);
+			*pnGPIO = bDataRet[0];
+			/*
+			nRet = 0x04;
+			pDataIn[0x00] = PCA9535_GPIO_PORT1_CON_REG;
+			if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_RBB, pDataIn[0], pDataIn, 0x02, \
+				(uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+			{
+				*pnGPIO |= (bDataRet[0] << 0x08);
+			}
+			*/
 		}
-		*/
 	}
-
 	return eRet;
 }
 
 EERROR CSMBusFunct::SetGPIO(uint32_t plevel, uint32_t nBitMask)
 {
 	EERROR eRet;
-	
-	uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_OUTPUT_REG, (uint8_t)plevel,0,0,0 }, bDataRet[4] = { 0x00 };
 	uint32_t nRet = 0x04;
 
 	if (m_n_GPIO_Cur_Id != EAPI_GPIO_BANK_ID(0))
@@ -130,28 +158,37 @@ EERROR CSMBusFunct::SetGPIO(uint32_t plevel, uint32_t nBitMask)
 	}
 
 	Sleep(50);
-	if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0x00], pDataIn,\
-		0x02, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
-	{
-		//write registry
-		GPIO_Registry_Write(plevel, 1);
-		/*
-		Sleep(50);
-		pDataIn[0x00] = PCA9535_GPIO_PORT1_OUTPUT_REG;
-		pDataIn[0x01] = (uint8_t)(plevel >> 0x08);
-		eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0x00],\
-			pDataIn, 0x02, (uint8_t*)&bDataRet, nRet);
-			*/
-	}
 
+	if (m_nSemaCaps & SEMA_C_GPIOS)
+	{
+		uint8_t pDataIn[] = { SEMA_CMD_GPIO_WRITE, (uint8_t)plevel };
+
+		eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr, TT_WBL, pDataIn[0], &pDataIn[1], 0x01);
+	}
+	else
+	{
+		uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_OUTPUT_REG, (uint8_t)plevel,0,0,0 }, bDataRet[4] = { 0x00 };
+
+		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0x00], pDataIn, \
+			0x02, (uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+		{
+			//write registry
+			GPIO_Registry_Write(plevel, 1);
+			/*
+			Sleep(50);
+			pDataIn[0x00] = PCA9535_GPIO_PORT1_OUTPUT_REG;
+			pDataIn[0x01] = (uint8_t)(plevel >> 0x08);
+			eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0x00],\
+				pDataIn, 0x02, (uint8_t*)&bDataRet, nRet);
+				*/
+		}
+	}
 	return eRet;
 }
 
 EERROR CSMBusFunct::SetGPIODir(uint32_t pDirection, uint32_t nBitMask)
 {
 	EERROR eRet;
-	
-	uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_CON_REG, (uint8_t)pDirection}, bDataRet[4] = { 0x00 };
 	uint32_t nRet = 0x04;
 
 	if (m_n_GPIO_Cur_Id != EAPI_GPIO_BANK_ID(0))
@@ -160,21 +197,32 @@ EERROR CSMBusFunct::SetGPIODir(uint32_t pDirection, uint32_t nBitMask)
 	}
 
 	Sleep(50);
-	if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0], pDataIn, 0x02, \
-		(uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+
+	if (m_nSemaCaps & SEMA_C_GPIOS)
 	{
-		//write registry
-		GPIO_Registry_Write(pDirection, 0);
+		uint8_t pDataIn[] = { SEMA_CMD_GPIO_DIR, (uint8_t)pDirection };
 
-		/*
-		pDataIn[0x00] = PCA9535_GPIO_PORT1_CON_REG;
-		pDataIn[0x01] = (uint8_t)(pDirection >> 0x08);
-		Sleep(50);
-		eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0], pDataIn, 0x02, \
-			(uint8_t*)&bDataRet, nRet);
-			*/
+		eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr, TT_WBL, pDataIn[0], &pDataIn[1], 0x01);
 	}
+	else
+	{
+		uint8_t pDataIn[] = { PCA9535_GPIO_PORT0_CON_REG, (uint8_t)pDirection }, bDataRet[4] = { 0x00 };
 
+		if ((eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0], pDataIn, 0x02, \
+			(uint8_t*)&bDataRet, nRet)) == EAPI_STATUS_SUCCESS)
+		{
+			//write registry
+			GPIO_Registry_Write(pDirection, 0);
+
+			/*
+			pDataIn[0x00] = PCA9535_GPIO_PORT1_CON_REG;
+			pDataIn[0x01] = (uint8_t)(pDirection >> 0x08);
+			Sleep(50);
+			eRet = m_clsSemaTrans.ByteTrans(PCA9535_ADDRESS, TT_WBB, pDataIn[0], pDataIn, 0x02, \
+				(uint8_t*)&bDataRet, nRet);
+				*/
+		}
+	}
 	return eRet;
 }
 
@@ -194,9 +242,19 @@ EERROR CSMBusFunct::GetCapsGpioDir(uint32_t* pnCapsIn, uint32_t* pnCapsOut, uint
 
 EERROR CSMBusFunct::ValidateBitMask(uint32_t nBitMask)
 {
-	if (nBitMask >= PCA9535_BITMASK)
+	if (m_nSemaCaps & SEMA_C_GPIOS)
 	{
-		return EAPI_STATUS_ERROR;
+		if (nBitMask >= BMC_BITMASK)
+		{
+			return EAPI_STATUS_ERROR;
+		}
+	}
+	else
+	{
+		if (nBitMask >= PCA9535_BITMASK)
+		{
+			return EAPI_STATUS_ERROR;
+		}
 	}
 	return EAPI_STATUS_SUCCESS;
 }

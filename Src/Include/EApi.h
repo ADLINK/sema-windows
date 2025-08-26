@@ -1,14 +1,19 @@
 #pragma once
 
+#include <stdint.h>
+#include <thread>
+#include <chrono>
+#include "Error.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #ifdef SEMAEAPI_EXPORTS
 #define SEMAEAPI_API __declspec(dllexport)
 #else
 #define SEMAEAPI_API __declspec(dllimport)
 #endif
-#include <stdint.h>
-#include <thread>
-#include <chrono>
-#include "Error.h"
+
 
 /************************************************************************
 * All version numbers
@@ -44,7 +49,7 @@
 
 #define EAPI_MANUFACTURE "ADLINK Technology Inc."
 
-#define EAPI_CURRENT_SEMA_VERSION	"ADLINK-SEMA-EC/BMC-WINDOWS-V4_R2_13_25_06_18"
+#define EAPI_CURRENT_SEMA_VERSION	"ADLINK-SEMA-EC/BMC-WINDOWS-V4_R2_14_25_07_09"
 /*
 **G P I O*
 */
@@ -417,7 +422,17 @@ SEMAEAPI_API uint32_t SemaEApiGetBIOSSource(uint8_t* bit0, uint8_t* bit1);
 SEMAEAPI_API uint32_t SemaEApiSetBIOSSource(uint8_t bit0, uint8_t bit1);
 SEMAEAPI_API uint32_t SemaEApiGetBIOSSourceSts(uint8_t* bit0, uint8_t* bit1, uint8_t* bit2);
 
+// SMBus Access
+SEMAEAPI_API uint32_t EApiSMBReadTrans(uint32_t Id, uint16_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt);
+SEMAEAPI_API uint32_t EApiSMBWriteTrans(uint32_t Id, uint32_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt);
+
+SEMAEAPI_API uint32_t SemaEApiSMBReadTrans(uint32_t Id, uint16_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt);
+SEMAEAPI_API uint32_t SemaEApiSMBWriteTrans(uint32_t Id, uint32_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt);
+
 #define EAPI_UINT8_C(x) ((uint8_t)(x))
 #define EAPI_UINT16_C(x) ((uint16_t)(x))
 #define EAPI_UINT32_C(x) ((uint32_t)(x))
-uint32_t getid(uint8_t gid);
+
+#ifdef __cplusplus
+}
+#endif

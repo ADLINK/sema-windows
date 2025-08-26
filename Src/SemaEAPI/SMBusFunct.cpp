@@ -316,12 +316,7 @@ EERROR CSMBusFunct::GetManufData(uint32_t nDataInfo, uint8_t* pData, uint32_t nL
 	if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_RD_MF_DATA + nDataInfo, \
 		NULL, 0x00, pData, nDataRet) == EAPI_STATUS_SUCCESS)
 	{
-		if (!(((nDataRet == 0x01) && (pData[0x00] == 0xF0)) || (pData[0x00] == 0xFF) || \
-			(pData[0x00] == ' ')))
-		{
-			return EAPI_STATUS_SUCCESS;
-		}
-		ZeroMemory(pData, nLen);
+		return EAPI_STATUS_SUCCESS;
 	}
 
 	return EAPI_STATUS_ERROR;
@@ -1299,6 +1294,74 @@ EERROR CSMBusFunct::SetBIOSSource(uint8_t bIndex)
 		
 		bIndex |= 0x80;
 		eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr, TT_WBL, SEMA_CMD_SET_SYSCTRLREG, &bIndex, 0x01);
+	}
+	return eRet;
+}
+
+EERROR CSMBusFunct::SMBusBlockTrans(uint8_t bAddr, uint8_t bType, uint8_t bCmd, uint8_t* pBufIn, uint32_t nInLen, uint8_t* pDataRet, uint32_t& nRetLen)
+{
+	EERROR eRet;
+	uint8_t m_bBMCAdr = bAddr;
+	uint32_t Len = nInLen, nOutLen = MAX_PATH;
+	uint8_t pWbuffer[3] = { 0 };
+	BYTE pRet[MAX_PATH];
+	ZeroMemory(pRet, MAX_PATH);
+
+	if (bType == TT_RBL)
+	{
+		ZeroMemory(pDataRet, MAX_PATH);
+		if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr, bType, bCmd, pBufIn, Len, pDataRet, nRetLen)) == EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else if (bType == TT_WBL)
+	{
+		if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr, bType, bCmd, pBufIn, Len)) == EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else if (bType == TT_WBW)
+	{
+		pWbuffer[0] = bCmd;
+		pWbuffer[1] = pBufIn[0];
+		pWbuffer[2] = pBufIn[1];
+
+		if ((eRet = m_clsSemaTrans.ByteTrans(m_bBMCAdr, bType, bCmd, pWbuffer, Len, pRet, nOutLen)) == EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else if (bType == TT_RBW)
+	{
+		pWbuffer[0] = bCmd;
+		if ((eRet = m_clsSemaTrans.ByteTrans(m_bBMCAdr, bType, bCmd, pWbuffer, Len, pRet, nOutLen)) == EAPI_STATUS_SUCCESS)
+		{
+			memcpy(pDataRet, pRet, 0x02);
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else if (bType == TT_RBB)
+	{
+		pWbuffer[0] = bCmd;
+		if ((eRet = m_clsSemaTrans.ByteTrans(m_bBMCAdr, bType, bCmd, pWbuffer, Len, pRet, nOutLen)) == EAPI_STATUS_SUCCESS)
+		{
+			memcpy(pDataRet, pRet, 0x01);
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else if (bType == TT_WBB) {
+		pWbuffer[0] = bCmd;
+		pWbuffer[1] = pBufIn[0];
+		if ((eRet = m_clsSemaTrans.ByteTrans(m_bBMCAdr, bType, bCmd, pWbuffer, Len, pRet, nOutLen)) == EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_SUCCESS;
+		}
+	}
+	else
+	{
+		return EAPI_STATUS_INVALID_PARAMETER;
 	}
 	return eRet;
 }

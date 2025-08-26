@@ -115,7 +115,8 @@ void ShowHelp(int condition)
 		printf("	semautil /b    for more help related to LVDS backlight control functions\n");
 		printf("\n- Exception Description:\n");
 		printf("	semautil /x    for more help related to exception description functions\n");
-
+		printf("\n- SMBus Access:\n");
+		printf("	semautil /smb    for more help related to SMBus Access functions\n");
 	}
 	if (condition == 1)
 	{
@@ -306,6 +307,15 @@ void ShowHelp(int condition)
 		printf("\n- UUID:\n");
 		printf("  1. semautil /c guid_generate_write\n");
 		printf("  2. semautil /c guid_read\n");
+	}
+
+	if (condition == 13)
+	{
+		printf("\n- SMBus:\n");
+		printf("  1. semautil /smb write_word [Addr] [Cmd] [data]\n");
+		printf("  2. semautil /smb read_word  [Addr] [Cmd]\n");
+		printf("  3. semautil /smb write_byte [Addr] [Cmd] [data]\n");
+		printf("  4. semautil /smb read_byte  [Addr] [Cmd]\n");
 	}
 }
 
@@ -625,7 +635,11 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 			}
 		}
 
-		char buffer[2048];
+		char* buffer = (char*)malloc(2048);
+		if (!buffer) {
+			perror("malloc failed");
+			return -1;
+		}
 		for (i = 5; i < argc; i++)
 		{
 			if (strlen(argv[i]) == 1)
@@ -1829,6 +1843,75 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 		else
 		{
 			help_condition = 12;
+		}
+	}
+	else if (_stricmp(argv[1], "/smb") == 0)
+	{
+		if (argc >= 6 && _stricmp(argv[2], "write_word") == 0)
+		{
+			Args->SMBusWriteWord = TRUE;
+
+			Args->SMBusFuncArgs.Address = string_to_hex(argv[3]);
+			Args->SMBusFuncArgs.cmd = string_to_hex(argv[4]);
+			Args->SMBusFuncArgs.nByteCnt = 2;
+			Args->SMBusFuncArgs.BufLen = 2;
+			Args->SMBusFuncArgs.pBuffer = calloc(Args->SMBusFuncArgs.nByteCnt, sizeof(unsigned char));
+			if (Args->SMBusFuncArgs.pBuffer == NULL)
+			{
+				return EAPI_STATUS_ERROR;
+			}
+
+			for (int i = 0; i < Args->SMBusFuncArgs.nByteCnt; i++)
+			{
+				((unsigned char*)(Args->SMBusFuncArgs.pBuffer))[i] = string_to_hex(argv[5 + i]);
+			}
+		}
+		else if (argc == 5 && _stricmp(argv[2], "read_word") == 0)
+		{
+			Args->SMBusReadWord = TRUE;
+
+			Args->SMBusFuncArgs.Address = string_to_hex(argv[3]);
+			Args->SMBusFuncArgs.cmd = string_to_hex(argv[4]);
+			Args->SMBusFuncArgs.nByteCnt = 0x02;
+			Args->SMBusFuncArgs.BufLen = 2;
+			Args->SMBusFuncArgs.pBuffer = calloc(Args->SMBusFuncArgs.nByteCnt, sizeof(unsigned char));
+			if (Args->SMBusFuncArgs.pBuffer == NULL)
+			{
+				return EAPI_STATUS_ERROR;
+			}
+		}
+
+		else if (argc == 6 && _stricmp(argv[2], "write_byte") == 0)
+		{
+			Args->SMBusWriteByte = TRUE;
+
+			Args->SMBusFuncArgs.Address = string_to_hex(argv[3]);
+			Args->SMBusFuncArgs.cmd = string_to_hex(argv[4]);
+			Args->SMBusFuncArgs.nByteCnt = 0x01;
+			Args->SMBusFuncArgs.BufLen = 1;
+			Args->SMBusFuncArgs.pBuffer = calloc(Args->SMBusFuncArgs.nByteCnt, sizeof(unsigned char));
+			if (Args->SMBusFuncArgs.pBuffer == NULL)
+			{
+				return EAPI_STATUS_ERROR;
+			}
+			((unsigned char*)(Args->SMBusFuncArgs.pBuffer))[0] = string_to_hex(argv[5]);
+		}
+		else if (argc == 5 && _stricmp(argv[2], "read_byte") == 0)
+		{
+			Args->SMBusReadByte = TRUE;
+
+			Args->SMBusFuncArgs.Address = string_to_hex(argv[3]);
+			Args->SMBusFuncArgs.cmd = string_to_hex(argv[4]);
+			Args->SMBusFuncArgs.nByteCnt = 0x01;
+			Args->SMBusFuncArgs.BufLen = 1;
+			Args->SMBusFuncArgs.pBuffer = calloc(Args->SMBusFuncArgs.nByteCnt, sizeof(unsigned char));
+			if (Args->SMBusFuncArgs.pBuffer == NULL)
+			{
+				return EAPI_STATUS_ERROR;
+			}
+		}
+		else {
+			help_condition = 13;
 		}
 	}
 	else if (argc == 2 && (_stricmp(argv[1], "version") == 0))

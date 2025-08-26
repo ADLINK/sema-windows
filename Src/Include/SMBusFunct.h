@@ -66,6 +66,10 @@ private:
 #define SEMA_CMD_BL_SETPWM			0x80		///< Set Backlight PWM
 #define SEMA_CMD_BL_GETPWM			0x81		///< Get Backlight PWM
 
+#define SEMA_CMD_GPIO_READ		0x88			///< Gpio Input
+#define SEMA_CMD_GPIO_WRITE		0x89			///< Gpio Output
+#define SEMA_CMD_GPIO_DIR		0x8A			///< Gpio Direction
+
 #define SEMA_CMD_SFC_CPU_TMP_SET_PTS	0xA0		///< Get/Set Smart Fan control (CPU) temperature setpoints
 #define SEMA_CMD_SFC_CPU_PWM_SET_PTS	0xA1		///< Get/Set Smart Fan control (CPU) PWM setpoints
 #define SEMA_CMD_SFC_SYS_1_TMP_SET_PTS		0xA2		///< Get/Set Smart Fan control (System #1) temperature setpoints
@@ -298,4 +302,6 @@ public:
 	virtual EERROR GetBIOSSource(uint8_t* pIndex);
 	virtual EERROR SetBIOSSource(uint8_t bIndex);
 	
+	//SMBus access
+	virtual EERROR SMBusBlockTrans(uint8_t bAddr, uint8_t bType, uint8_t bCmd, uint8_t* pBufIn, uint32_t nInLen, uint8_t* pDataRet, uint32_t& nRetLen);
 };

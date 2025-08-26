@@ -17,13 +17,22 @@ uint32_t EApiLibInitialize(void)
 
 	uint32_t Status;
 
+	/*One time creation of Mutex*/
+	if (Ccmn.ghMutex == NULL) // Ensure it's created only once
+	{
+		Ccmn.ghMutex = CreateMutex(NULL, FALSE, TEXT("SEMA_4_0"));
+		if (Ccmn.ghMutex == NULL)
+		{
+			return EAPI_STATUS_ALLOC_ERROR;
+		}
+	}
+
 	if ((Status = Ccmn.lock()) != EAPI_STATUS_SUCCESS)
 	{
 		goto out;
 	}
 #if !EGW3200
 	{
-		
 		BoardType = Ccmn.Init();
 	}
 #else
@@ -266,6 +275,11 @@ uint32_t EApiStorageHexWrite(uint32_t Id, uint32_t nOffset, void* pBuffer, uint3
 
 	if ((Id != EAPI_ID_STORAGE_STD && Id != EAPI_ID_STORAGE_SCR && Id != EAPI_ID_STORAGE_ODM) || pBuffer == NULL || nByteCnt < 0) {
 		return EAPI_STATUS_INVALID_PARAMETER;
+	}
+	
+	if (pBMCFunct->FindCap(SEMA_CAP_BMC_TIVA) != 0)
+	{
+		return EAPI_STATUS_UNSUPPORTED;
 	}
 
 	if (pBMCFunct->StorageCap(Id, &StorageSize, &BlockLength) != EAPI_STATUS_SUCCESS) {
@@ -1154,7 +1168,6 @@ uint32_t EApiGPIOGetDirectionCaps(uint8_t GpioId, uint32_t* pnCapsIn, uint32_t* 
 {
 	uint32_t Status;
 	uint32_t Bitmask=1;
-	uint8_t eRet;
 
 	if (!pBMCFunct->IsInitialiezed()) {
 		return EAPI_STATUS_NOT_INITIALIZED;
@@ -1253,7 +1266,7 @@ out:
 uint32_t EApiGPIOSetDirection(uint8_t GpioId, uint32_t Bitmask, uint32_t pDirection)
 {
 	EERROR eRet;
-	uint32_t pDirectionLast, pDir, Level_last, i,Bitmask_Ext;
+	uint32_t pDirectionLast, i,Bitmask_Ext;
 
 	if (!pBMCFunct->IsInitialiezed()) {
 		return EAPI_STATUS_NOT_INITIALIZED;
@@ -1752,6 +1765,11 @@ uint32_t EApiStorageHexRead(uint32_t Id, uint32_t nOffset, void* pBuffer, uint32
 		nByteCnt < 0) {
 		return EAPI_STATUS_INVALID_PARAMETER;
 	}
+	
+	if (pBMCFunct->FindCap(SEMA_CAP_BMC_TIVA) != 0) 
+	{
+		return EAPI_STATUS_UNSUPPORTED;
+	}
 
 	if (pBMCFunct->StorageCap(Id, &StorageSize, &BlockLength) != EAPI_STATUS_SUCCESS) {
 		return EAPI_STATUS_UNSUPPORTED;
@@ -1768,6 +1786,84 @@ uint32_t EApiStorageHexRead(uint32_t Id, uint32_t nOffset, void* pBuffer, uint32
 	}
 
 	Status = pBMCFunct->ReadMem(Id, nOffset, (uint8_t*)pBuffer, nByteCnt);
+
+out:
+	Ccmn.unlock();
+	return Status;
+}
+
+uint32_t EApiSMBReadTrans(uint32_t Id, uint16_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen, uint32_t ByteCnt)
+{
+	uint32_t Status;
+	uint16_t m_bBMCAdr = Addr << 1;
+	uint32_t Type;
+
+	if (!pBMCFunct->IsInitialiezed()) {
+		return EAPI_STATUS_NOT_INITIALIZED;
+	}
+
+	if ((Status = Ccmn.lock()) != EAPI_STATUS_SUCCESS)
+	{
+		goto out;
+	}
+
+	if (BufLen == 32)
+	{
+		Type = TT_RBL;
+	}
+	else if (BufLen == 2)
+	{
+		Type = TT_RBW;
+	}
+	else if (BufLen == 1)
+	{
+		Type = TT_RBB;
+	}
+	else
+	{
+		return EAPI_STATUS_UNSUPPORTED;
+	}
+
+	if ((Status = pBMCFunct->SMBusBlockTrans((uint8_t)m_bBMCAdr | 0x01, Type, (uint8_t)Cmd, NULL, 0x00, (uint8_t*)pBuffer, ByteCnt)) != EAPI_STATUS_SUCCESS) {
+		goto out;
+	}
+
+out:
+	Ccmn.unlock();
+	return Status;
+}
+
+uint32_t EApiSMBWriteTrans(uint32_t Id, uint32_t Addr, uint32_t Cmd, void* pBuffer, uint32_t BufLen,uint32_t ByteCnt)
+{
+	uint32_t Status;
+	uint32_t m_bBMCAdr = Addr << 1;
+	uint32_t nRetLen = 0x00;
+	uint32_t Type;
+
+	if (!pBMCFunct->IsInitialiezed()) {
+		return EAPI_STATUS_NOT_INITIALIZED;
+	}
+
+	if ((Status = Ccmn.lock()) != EAPI_STATUS_SUCCESS)
+	{
+		goto out;
+	}
+	if (BufLen == 2)
+	{
+		Type = TT_WBW;
+	}
+	else if (BufLen == 1)
+	{
+		Type = TT_WBB;
+	}
+	else
+	{
+		return EAPI_STATUS_UNSUPPORTED;
+	}
+
+	if ((Status = pBMCFunct->SMBusBlockTrans((uint8_t)m_bBMCAdr, Type, (uint8_t)Cmd, (uint8_t*)pBuffer, ByteCnt, NULL, nRetLen)) != EAPI_STATUS_SUCCESS) {
+		goto out;
+	}
 
 out:
 	Ccmn.unlock();

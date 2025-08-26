@@ -230,49 +230,92 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				break;
 			case EAPI_SEMA_ID_BOARD_CAPABILITIES_EX:
 				printf("\nExtended BMC capabilities:\n");
-				for (i = 0; i < (sizeof(BoardExCapabilities) / sizeof(*BoardExCapabilities)); i++) {
-
-					if (i != 2)
+				unsigned int buffer;
+				if ((sts = SemaEApiBoardGetValue(EAPI_SEMA_ID_BOARD_CAPABILITIES, &buffer)) == EAPI_STATUS_SUCCESS) {
+					if ((buffer & (1 << 31)) != 0)
 					{
-						if (i == 12)
+						for (i = 0; i < (sizeof(BoardExCapabilities) / sizeof(*BoardExCapabilities)); i++)
 						{
-							if ((Args->SemaNativeFuncArgs.IntData & (1 << i)) != 0)
+							if (i != 2)
 							{
-								Extvalues[i] = " : 12 Pins";
-							}
-							else
-							{
-								Extvalues[i] = " : 8 Pins";
+								if (i == 5)
+								{
+									BoardExCapabilities[i] = "Wake by BMC";
+								}
+								if ((Args->SemaNativeFuncArgs.IntData & (1 << i)) != 0)
+								{
+									Extvalues[i] = " : Supported";
+								}
+								else
+								{
+									Extvalues[i] = " : Not Supported";
+								}
 							}
 						}
-						else
-						{
-							if ((Args->SemaNativeFuncArgs.IntData & (1 << i)) != 0)
-							{
-								Extvalues[i] = " : Supported";
+						printf("\n%-*s%-*s%-*s\t\t%-*s%-*s%-*s", 10, "Bit", 30, "Capability", 30, " Status", 10, "Bit", 30, "Capability", 30, " Status");
+						printf("\n");
+						for (i = 0; i < 5; i++) {
+
+
+
+							if (i != 2) {
+								printf("\n%-*d%-*s%-*s\t\t%-*d%-*s%-*s", 8, i + 32, 30, BoardExCapabilities[i], 30, Extvalues[i], 8, i + 32 + 5, 30, BoardExCapabilities[i + 5], 30, Extvalues[i + 5]);
 							}
-							else
-							{
-								Extvalues[i] = " : Not Supported";
+							else {
+								printf("\n%65s\t\t%-*d%-*s%-*s", "", 8, i + 32 + 5, 30, BoardExCapabilities[i + 5], 30, Extvalues[i + 5]);
 							}
 						}
 					}
-				}
-				printf("\n%-*s%-*s%-*s\t\t%-*s%-*s%-*s", 10, "Bit", 30, "Capability", 30, " Status", 10, "Bit", 30, "Capability", 30, " Status");
-				printf("\n");
-				for (i = 0; i < 8; i++) {
-					if (i == 7) {
-						printf("\n%-*d%-*s%-*s", 8, i + 32, 30, BoardExCapabilities[i], 30, Extvalues[i]);
-					}
-					else if (i != 2) {
-						printf("\n%-*d%-*s%-*s\t\t%-*d%-*s%-*s", 8, i + 32, 30, BoardExCapabilities[i], 30, Extvalues[i], 8, i + 32 + 8, 30, BoardExCapabilities[i + 8], 30, Extvalues[i + 8]);
-					}
-					else {
-						printf("\n%65s\t\t%-*d%-*s%-*s", "", 8, i + 32 + 8, 30, BoardExCapabilities[i + 8], 30, Extvalues[i + 8]);
+					else
+					{
+						for (i = 0; i < (sizeof(BoardExCapabilities) / sizeof(*BoardExCapabilities)); i++) {
+
+
+
+							if (i != 2)
+							{
+								if (i == 12)
+								{
+									if ((Args->SemaNativeFuncArgs.IntData & (1 << i)) != 0)
+									{
+										Extvalues[i] = " : 12 Pins";
+									}
+									else
+									{
+										Extvalues[i] = " : 8 Pins";
+									}
+								}
+								else
+								{
+									if ((Args->SemaNativeFuncArgs.IntData & (1 << i)) != 0)
+									{
+										Extvalues[i] = " : Supported";
+									}
+									else
+									{
+										Extvalues[i] = " : Not Supported";
+									}
+								}
+							}
+						}
+						printf("\n%-*s%-*s%-*s\t\t%-*s%-*s%-*s", 10, "Bit", 30, "Capability", 30, " Status", 10, "Bit", 30, "Capability", 30, " Status");
+						printf("\n");
+						for (i = 0; i < 8; i++) {
+							if (i == 7) {
+								printf("\n%-*d%-*s%-*s", 8, i + 32, 30, BoardExCapabilities[i], 30, Extvalues[i]);
+							}
+							else if (i != 2) {
+								printf("\n%-*d%-*s%-*s\t\t%-*d%-*s%-*s", 8, i + 32, 30, BoardExCapabilities[i], 30, Extvalues[i], 8, i + 32 + 8, 30, BoardExCapabilities[i + 8], 30, Extvalues[i + 8]);
+							}
+							else {
+								printf("\n%65s\t\t%-*d%-*s%-*s", "", 8, i + 32 + 8, 30, BoardExCapabilities[i + 8], 30, Extvalues[i + 8]);
+							}
+						}
 					}
 				}
 				printf("\n");
 				break;
+
 			case EAPI_SEMA_ID_BOARD_SYSTEM_MIN_TEMP:
 				printf("\nBoard minimum temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
@@ -897,6 +940,7 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 		StorageSize = 1024;
 		unsigned char* Data = (unsigned char*)calloc(sizeof(unsigned char), StorageSize);
 		memcpy(&(Data[diff]), Args->StorageFuncArgs.String, strlen(Args->StorageFuncArgs.String));
+		free(Args->StorageFuncArgs.String);
 		for (i = 0; i < Length - 2; i++)
 		{
 			if (isxdigit(Data[i]) == 0)
@@ -967,6 +1011,15 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 		Args->SemaNativeFuncArgs.Size = 100;
 		if ((sts = EApiBoardGetStringA(Args->SemaNativeFuncArgs.cap, (Args->SemaNativeFuncArgs.pData), &Args->SemaNativeFuncArgs.Size)) == EAPI_STATUS_SUCCESS)
 		{
+			if (((Args->SemaNativeFuncArgs.Size == 0x01) && (Args->SemaNativeFuncArgs.pData[0x00] == 0xF0)) || (Args->SemaNativeFuncArgs.pData[0x00] == 0xFF) || (Args->SemaNativeFuncArgs.pData[0x00] == ' '))
+			{
+				printf("\nData:");
+				for (int i = 0;i < Args->SemaNativeFuncArgs.Size;i++) {
+					printf(" 0x%X", Args->SemaNativeFuncArgs.pData[i]);
+				}
+				printf("\n");
+				return sts;
+			}
 			switch (Args->SemaNativeFuncArgs.cap)
 			{
 
@@ -1472,6 +1525,44 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 	{
 		printf("\nSEMA Version : %s\n", EAPI_CURRENT_SEMA_VERSION);
 		return 0;
+	}
+	
+	if (Args->SMBusReadWord) {
+		uint32_t ByteCnt = Args->SMBusFuncArgs.nByteCnt;
+		uint8_t Cmd = Args->SMBusFuncArgs.cmd;
+		if ((sts = SemaEApiSMBReadTrans(Args->SMBusFuncArgs.Id, (uint16_t)Args->SMBusFuncArgs.Address, Args->SMBusFuncArgs.cmd, Args->SMBusFuncArgs.pBuffer, Args->SMBusFuncArgs.BufLen, Args->SMBusFuncArgs.nByteCnt)) == EAPI_STATUS_SUCCESS) {
+			printf("\nRead data: \n");
+			for (int i = 0; i < (int)ByteCnt; i++) {
+				
+				printf("%02d : %02x\n", i, ((unsigned char*)(Args->SMBusFuncArgs.pBuffer))[i]);
+			}
+			printf("\n");
+		}
+	}
+
+	if (Args->SMBusReadByte) {
+		uint32_t ByteCnt = Args->SMBusFuncArgs.nByteCnt;
+		uint8_t Cmd = Args->SMBusFuncArgs.cmd;
+		if ((sts = SemaEApiSMBReadTrans(Args->SMBusFuncArgs.Id, (uint16_t)Args->SMBusFuncArgs.Address, Args->SMBusFuncArgs.cmd, Args->SMBusFuncArgs.pBuffer, Args->SMBusFuncArgs.BufLen, Args->SMBusFuncArgs.nByteCnt)) == EAPI_STATUS_SUCCESS) {
+			printf("\nRead data: %02x\n", ((unsigned char*)(Args->SMBusFuncArgs.pBuffer))[0]);
+			printf("\n");
+		}
+	}
+
+	if (Args->SMBusWriteWord)
+	{
+		if ((sts = SemaEApiSMBWriteTrans(Args->SMBusFuncArgs.Id, Args->SMBusFuncArgs.Address, Args->SMBusFuncArgs.cmd, Args->SMBusFuncArgs.pBuffer,Args->SMBusFuncArgs.BufLen, Args->SMBusFuncArgs.nByteCnt)) == EAPI_STATUS_SUCCESS)
+		{
+			printf("\nThe SMBus Write Word Transfer command is completed\n");
+		}
+	}
+
+	if (Args->SMBusWriteByte)
+	{
+		if ((sts = SemaEApiSMBWriteTrans(Args->SMBusFuncArgs.Id, Args->SMBusFuncArgs.Address, Args->SMBusFuncArgs.cmd, Args->SMBusFuncArgs.pBuffer, Args->SMBusFuncArgs.BufLen, Args->SMBusFuncArgs.nByteCnt)) == EAPI_STATUS_SUCCESS)
+		{
+			printf("\nThe SMBus Write Byte Transfer command is completed\n");
+		}
 	}
 
 	return sts;

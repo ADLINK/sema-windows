@@ -45,7 +45,7 @@ typedef struct
 		unsigned char	FanMode;
 	}SmartFaneFuncArgs;
 
-	bool	GetStringA,  GetValue, GetVoltageMonitor;
+	bool	GetStringA,  GetValue, GetVoltageMonitor, GtVersion;
 	struct {
 		unsigned char cap;
 		unsigned int Size;
@@ -115,6 +115,16 @@ typedef struct
 		uint32_t nByteCnt;
 		uint32_t WByteCnt;
 	}I2CFuncArgs;
+
+	bool SMBusWriteByte, SMBusWriteWord, SMBusReadByte,SMBusReadWord;
+	struct {
+		uint32_t Address;
+		uint32_t cmd;
+		void* pBuffer;
+		uint32_t nByteCnt;
+		uint32_t Id;
+		uint32_t BufLen;
+	}SMBusFuncArgs;
 }tCmdLineArgs;
 
 

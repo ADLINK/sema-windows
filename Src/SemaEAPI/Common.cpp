@@ -135,19 +135,9 @@ EERROR Ccommon_bmc::lock(void)
 {
 	DWORD dwWaitResult;
 
-	ghMutex = CreateMutex(
-		NULL,              // default security attributes
-		FALSE,             // initially not owned
-		TEXT("SEMA_4_0"));
-	
-	if (ghMutex == NULL)
-	{
-		return EAPI_STATUS_ALLOC_ERROR;
-	}
-
 	dwWaitResult = WaitForSingleObject(
 		ghMutex,    // handle to mutex
-		INFINITE);  // no time-out interval
+		10);  // 10ms time-out interval
 
 	if(dwWaitResult == WAIT_FAILED)
 	{

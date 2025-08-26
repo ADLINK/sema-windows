@@ -27,9 +27,6 @@
     <ClInclude Include="..\Include\Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\SemaEAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SemaApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
