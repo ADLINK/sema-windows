@@ -26,6 +26,4 @@ After installing the SEMA package,
 To test 64-bit library and application, navigate to the following path:
 “C:\Program Files\Adlink\SEMA\Application”
 
-To test 32-bit library and application, navigate to the following path:
-“C:\Program Files (x86)\Adlink\SEMA\Application”
 

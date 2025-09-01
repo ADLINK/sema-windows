@@ -18,9 +18,3 @@ ______________________________
 
 Double click on "Sema4.sln" to open solution in visual studio. Set the Solution Configuration to 'Release' and Solution Platform to 'x64' to build the 64-bit version of Driver, Library and Application.
 
-
-To build 32-bit SEMA binaries:
-______________________________
-
-Double click on "Sema4.sln" to open solution in visual studio. Set the Solution Configuration to 'Release' and Solution Platform to 'x86/Win32' to build the 32-bit version of Library and Application. 
-
