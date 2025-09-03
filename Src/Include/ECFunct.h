@@ -62,6 +62,10 @@ private:
 #define EC_RW_ADDR_GPIO_OUT_EXT  			0x87
 #define EC_RW_ADDR_GPIO_IN_EXT				0x89
 #define EC_RO_ADDR_FW_VERSION				0xF0
+#define	EC_RO_ADDR_SYS_CUR_TEMP             0x48
+#define	EC_RO_ADDR_SYS_MAX_TEMP             0x49 
+#define	EC_RO_ADDR_SYS_MIN_TEMP             0x4A 
+#define	EC_RO_ADDR_SYS_STARTUP_TEMP         0x4B 
 
 #define EC_RW_ADDR_IIC_BMC_STATUS			0x10
 #define EC_WO_ADDR_IIC_CMD_START			0x11
@@ -131,6 +135,11 @@ public:
 	virtual EERROR GetCurrentBoardTemp_1(int* pchStartBoard);
 	virtual EERROR GetMinMaxTemp_1(int* pchpMinCPU, int* pchMaxCPU, int* pchMinBoard, int* pchMaxBoard);
 	virtual EERROR GetStartupTemp_1(int* pchStartCPU, int* pchStartBoard);
+	//System Temp
+	virtual EERROR GetCurrentSystemTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemMinTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemMaxTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemStartupTemp(int32_t* pchTemp);
 
 	virtual EERROR SetSysCtrlReg(uint32_t nValue);
 	virtual EERROR GetSysCtrlReg(uint32_t* pnCtrlReg);

@@ -4,14 +4,14 @@
 #include "SemaApp.h"
 
 
-unsigned int GetValuesMap[41] = 
+unsigned int GetValuesMap[45] = 
 {   0,
 	EAPI_ID_GET_EAPI_SPEC_VERSION,
 	EAPI_ID_BOARD_BOOT_COUNTER_VAL,
 	EAPI_ID_BOARD_RUNNING_TIME_METER_VAL,
 	EAPI_ID_BOARD_LIB_VERSION_VAL,
 	EAPI_ID_HWMON_CPU_TEMP,
-	EAPI_ID_HWMON_SYSTEM_TEMP,
+	EAPI_ID_HWMON_BOARD_TEMP,
 	EAPI_ID_HWMON_VOLTAGE_VCORE,
 	EAPI_ID_HWMON_VOLTAGE_2V5,
 	EAPI_ID_HWMON_VOLTAGE_3V3,
@@ -25,9 +25,9 @@ unsigned int GetValuesMap[41] =
 	EAPI_SEMA_ID_BOARD_RESTART_EVENT,
 	EAPI_SEMA_ID_BOARD_CAPABILITIES,
 	EAPI_SEMA_ID_BOARD_CAPABILITIES_EX,
-	EAPI_SEMA_ID_BOARD_SYSTEM_MIN_TEMP,
-	EAPI_SEMA_ID_BOARD_SYSTEM_MAX_TEMP,
-	EAPI_SEMA_ID_BOARD_SYSTEM_STARTUP_TEMP,
+	EAPI_SEMA_ID_BOARD_MIN_TEMP,
+	EAPI_SEMA_ID_BOARD_MAX_TEMP,
+	EAPI_SEMA_ID_BOARD_STARTUP_TEMP,
 	EAPI_SEMA_ID_BOARD_CPU_MIN_TEMP,
 	EAPI_SEMA_ID_BOARD_CPU_MAX_TEMP,
 	EAPI_SEMA_ID_BOARD_CPU_STARTUP_TEMP,
@@ -45,7 +45,11 @@ unsigned int GetValuesMap[41] =
 	EAPI_SEMA_ID_BOARD_POWER_CYCLE,
 	EAPI_SEMA_ID_BOARD_BMC_FLAG,
 	EAPI_SEMA_ID_BOARD_BMC_STATUS,
-	EAPI_SEMA_ID_IO_CURRENT
+	EAPI_SEMA_ID_IO_CURRENT,
+	EAPI_SEMA_ID_HWMON_SYSTEM_TEMP,
+	EAPI_SEMA_ID_HWMON_SYSTEM_MIN_TEMP,
+	EAPI_SEMA_ID_HWMON_SYSTEM_MAX_TEMP,
+	EAPI_SEMA_ID_HWMON_SYSTEM_STARTUP_TEMP
 };
 
 
@@ -78,6 +82,23 @@ unsigned int string_to_hex(char *string)
 	}
 	return data;
 }
+
+void print_temp_source_help()
+{
+	char boardName[100] = { 0 };
+	uint32_t size = sizeof(boardName);
+	uint32_t status;
+
+	status = EApiBoardGetStringA(EAPI_ID_BOARD_NAME_STR, (uint8_t*)boardName, &size);
+	if (status == EAPI_STATUS_SUCCESS && strstr(boardName, "HPC") != NULL) {
+		printf("\n CPU Fan TempSrc:\n\t0 - CPU sensor\n\t1 - Board sensor\n");
+		printf("\n System Fan1 TempSrc:\n\t0 - CPU sensor\n\t1 - Carrier sensor\n");
+	}
+	else {
+		printf("\n TempSrc:\n\t0 - CPU sensor\n\t1 - Board sensor\n");
+	}
+}
+
 
 void ShowHelp(int condition)
 {
@@ -177,7 +198,7 @@ void ShowHelp(int condition)
 		printf("  6. semautil /f get_temp_source [FanID]\n");
 		printf("  7. semautil /f get_mode        [FanID] \n");
 		printf("  8. semautil /f set_mode        [FanID] [Mode]\n");
-		printf("\n  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+		print_temp_source_help();
 		printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n");
 		printf("  Mode\n\t0 : Auto\n\t1 : Off\n\t2 : On\n\t3 : Soft\n");
 	}
@@ -239,7 +260,7 @@ void ShowHelp(int condition)
 		printf("       3	:  Running Time Meter\n");
 		printf("       4	:  Vendor Specific Library Version\n");
 		printf("       5	:  CPU Temperature\n");
-		printf("       6	:  System Temperature\n");
+		printf("       6	:  Board Temperature\n");
 		printf("       7 	:  CPU Core Voltage\n");
 		printf("       8	:  2.5V Voltage\n");
 		printf("       9	:  3.3V Voltage\n");
@@ -274,6 +295,10 @@ void ShowHelp(int condition)
 		printf("       38	:  Get Board BMC Flag\n");
 		printf("       39	:  Get Board BMC Status\n");
 		printf("       40	:  IO current\n");
+		printf("       41	:  System Temperature\n");
+		printf("       42	:  System Min Temperature\n");
+		printf("       43	:  System Max Temperature\n");
+		printf("       44	:  System Startup Temperature\n");
 	}
 	if (condition == 10)
 	{
@@ -927,7 +952,7 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 						Args->SmartFanTempGetSrc = FALSE;
 						printf("\nsemautil /f get_temp_source [FanID]\n");
 						printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
-						printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+						print_temp_source_help();
 						eRet = -3;
 						k = 1;
 						break;
@@ -939,7 +964,8 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 					Args->SmartFanTempGetSrc = FALSE;
 					printf("\nsemautil /f get_temp_source [FanID]\n");
 					printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
-					printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+					print_temp_source_help();
+
 					eRet = -3;
 				}
 			}
@@ -948,7 +974,7 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 				Args->SmartFanTempGetSrc = FALSE;
 				printf("\nsemautil /f get_temp_source [FanID]\n");
 				printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
-				printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+				print_temp_source_help();
 				eRet = -3;
 			}
 		}
@@ -967,8 +993,8 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 					{
 						Args->SmartFanTempGetSrc = FALSE;
 						printf("\nsemautil /f set_temp_source [FanID] [TempSrc]\n");
-						printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n");
-						printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+						printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
+						print_temp_source_help();
 						eRet = -3;
 						k = 1;
 						break;
@@ -980,8 +1006,9 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 				{
 					Args->SmartFanTempGetSrc = FALSE;
 					printf("\nsemautil /f set_temp_source [FanID] [TempSrc]\n");
-					printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n");
-					printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+					printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
+					print_temp_source_help();
+
 					eRet = -3;
 				}
 			}
@@ -989,8 +1016,9 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 			{
 				Args->SmartFanTempGetSrc = FALSE;
 				printf("\nsemautil /f set_temp_source [FanID] [TempSrc]\n");
-				printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n");
-				printf("  TempSrc\n\t0 - CPU sensor\n\t1 - Board seensor\n");
+				printf("  FanID\n\t0 : CPU fan\n\t1 : System fan 1\n\t2 : System fan 2\n\t3 : System fan 3\n\n");
+				print_temp_source_help();
+
 				eRet = -3;
 			}
 		}
@@ -1206,7 +1234,7 @@ signed int ParseArgs(int argc, char* argv[], tCmdLineArgs *Args)
 			Args->SemaNativeFuncArgs.Id = atoi(argv[3]);
 			Args->SemaNativeFuncArgs.inSize = 20;
 
-			if (Args->SemaNativeFuncArgs.Id < 1 || Args->SemaNativeFuncArgs.Id > 40)
+			if (Args->SemaNativeFuncArgs.Id < 1 || Args->SemaNativeFuncArgs.Id > 44)
 			{
 				Args->GetValue = FALSE;
 				help_condition = 9;

@@ -823,7 +823,7 @@ uint32_t EApiBoardGetValue(uint32_t Id, uint32_t* pData)
 	}
 	break;
 
-	case EAPI_SEMA_ID_BOARD_SYSTEM_MIN_TEMP:
+	case EAPI_SEMA_ID_BOARD_MIN_TEMP:
 	{
 		int chMaxTempBoard = 0x00;
 
@@ -838,7 +838,7 @@ uint32_t EApiBoardGetValue(uint32_t Id, uint32_t* pData)
 	}
 	break;
 
-	case EAPI_SEMA_ID_BOARD_SYSTEM_MAX_TEMP:
+	case EAPI_SEMA_ID_BOARD_MAX_TEMP:
 	{
 		int chMinTempBoard = 0x00;
 
@@ -852,7 +852,7 @@ uint32_t EApiBoardGetValue(uint32_t Id, uint32_t* pData)
 	}
 	break;
 
-	case EAPI_SEMA_ID_BOARD_SYSTEM_STARTUP_TEMP:
+	case EAPI_SEMA_ID_BOARD_STARTUP_TEMP:
 	{
 		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
 		{
@@ -1153,12 +1153,71 @@ uint32_t EApiBoardGetValue(uint32_t Id, uint32_t* pData)
 	}
 	break;
 
-	case EAPI_ID_HWMON_SYSTEM_TEMP:
+	case EAPI_ID_HWMON_BOARD_TEMP:
 	{
+		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
+		{
+			Status = EAPI_STATUS_UNSUPPORTED;
+			goto out;
+		}
+
 		Status = pBMCFunct->GetCurrentBoardTemp((int*)pData);
 	}
 	break;
+
+	case EAPI_SEMA_ID_HWMON_SYSTEM_TEMP:
+	{
+		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
+		{
+			Status = EAPI_STATUS_UNSUPPORTED;
+			goto out;
+		}
+		Status = pBMCFunct->GetCurrentSystemTemp((int*)pData);
 	}
+	break;
+
+	
+
+	case EAPI_SEMA_ID_HWMON_SYSTEM_MIN_TEMP:
+	{
+		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
+		{
+			Status = EAPI_STATUS_UNSUPPORTED;
+			goto out;
+		}
+
+		Status = pBMCFunct->GetSystemMinTemp((int*)pData);
+	}
+	break;
+
+
+	case EAPI_SEMA_ID_HWMON_SYSTEM_MAX_TEMP:
+	{
+		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
+		{
+			Status = EAPI_STATUS_UNSUPPORTED;
+			goto out;
+		}
+
+		Status = pBMCFunct->GetSystemMaxTemp((int*)pData);
+	}
+	break;
+
+	case EAPI_SEMA_ID_HWMON_SYSTEM_STARTUP_TEMP:
+	{
+		if (pBMCFunct->FindCap(SEMA_CAP_TEMPERATURES) == 0)
+		{
+			Status = EAPI_STATUS_UNSUPPORTED;
+			goto out;
+		}
+
+		Status = pBMCFunct->GetSystemStartupTemp((int*)pData);
+	}
+	break;
+
+
+	}
+	
 out:
 	Ccmn.unlock();
 	return Status;

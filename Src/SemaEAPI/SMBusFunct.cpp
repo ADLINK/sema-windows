@@ -1298,6 +1298,27 @@ EERROR CSMBusFunct::SetBIOSSource(uint8_t bIndex)
 	return eRet;
 }
 
+
+EERROR CSMBusFunct::GetCurrentSystemTemp(int32_t* pchTemp)
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}
+
+EERROR CSMBusFunct::GetSystemMinTemp(int32_t* pchTemp)
+{
+	return	EAPI_STATUS_UNSUPPORTED;
+}
+
+EERROR CSMBusFunct::GetSystemMaxTemp(int32_t* pchTemp)
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}
+
+EERROR CSMBusFunct::GetSystemStartupTemp(int32_t* pchTemp)
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}
+
 EERROR CSMBusFunct::SMBusBlockTrans(uint8_t bAddr, uint8_t bType, uint8_t bCmd, uint8_t* pBufIn, uint32_t nInLen, uint8_t* pDataRet, uint32_t& nRetLen)
 {
 	EERROR eRet;

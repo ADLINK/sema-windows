@@ -297,6 +297,68 @@ EERROR CECFunct::GetCurrentBoardTemp(int32_t* pchTemp)
 }
 
 
+EERROR CECFunct::GetCurrentSystemTemp(int32_t* pchTemp)
+{
+	EERROR eRet;
+	float pchTempL = 0;
+
+	if ((eRet = m_clsECTrans.ECRead(EC_RO_ADDR_SYS_CUR_TEMP, EC_REGION_1, \
+		(uint8_t*)pchTemp, 1)) == EAPI_STATUS_SUCCESS)
+	{
+		pchTempL = (float)(*((int8_t*)pchTemp));
+		*pchTemp = EAPI_ENCODE_CELCIUS((int8_t)pchTempL);
+	}
+
+	return eRet;
+}
+
+
+EERROR CECFunct::GetSystemMinTemp(int32_t* pchTemp)
+{
+	EERROR eRet;
+	float pchTempL = 0;
+
+	if ((eRet = m_clsECTrans.ECRead(EC_RO_ADDR_SYS_MIN_TEMP, EC_REGION_1, \
+		(uint8_t*)pchTemp, 1)) == EAPI_STATUS_SUCCESS)
+	{
+		pchTempL = (float)(*((int8_t*)pchTemp));
+		*pchTemp = EAPI_ENCODE_CELCIUS((int8_t)pchTempL);
+	}
+
+	return eRet;
+}
+
+
+EERROR CECFunct::GetSystemMaxTemp(int32_t* pchTemp)
+{
+	EERROR eRet;
+	float pchTempL = 0;
+
+	if ((eRet = m_clsECTrans.ECRead(EC_RO_ADDR_SYS_MAX_TEMP, EC_REGION_1, \
+		(uint8_t*)pchTemp, 1)) == EAPI_STATUS_SUCCESS)
+	{
+		pchTempL = (float)(*((int8_t*)pchTemp));
+		*pchTemp = EAPI_ENCODE_CELCIUS((int8_t)pchTempL);
+	}
+
+	return eRet;
+}
+
+EERROR CECFunct::GetSystemStartupTemp(int32_t* pchTemp)
+{
+	EERROR eRet;
+	float pchTempL = 0;
+
+	if ((eRet = m_clsECTrans.ECRead(EC_RO_ADDR_SYS_STARTUP_TEMP, EC_REGION_1, \
+		(uint8_t*)pchTemp, 1)) == EAPI_STATUS_SUCCESS)
+	{
+		pchTempL = (float)(*((int8_t*)pchTemp));
+		*pchTemp = EAPI_ENCODE_CELCIUS((int8_t)pchTempL);
+	}
+
+	return eRet;
+}
+
 EERROR CECFunct::GetBRDMinMaxTemp(int* pchMinBoard, int* pchMaxBoard)
 {
 	EERROR eRet;

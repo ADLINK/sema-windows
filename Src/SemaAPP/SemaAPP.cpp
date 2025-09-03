@@ -136,8 +136,8 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 			case EAPI_ID_HWMON_CPU_TEMP:
 				printf("\nCPU temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
-			case EAPI_ID_HWMON_SYSTEM_TEMP:
-				printf("\nSystem Temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
+			case EAPI_ID_HWMON_BOARD_TEMP:
+				printf("\nBoard Temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
 			case EAPI_ID_HWMON_VOLTAGE_VCORE:
 				printf("\nCPU Core Voltage: %d mV\n", Args->SemaNativeFuncArgs.IntData);
@@ -315,14 +315,13 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				}
 				printf("\n");
 				break;
-
-			case EAPI_SEMA_ID_BOARD_SYSTEM_MIN_TEMP:
+			case EAPI_SEMA_ID_BOARD_MIN_TEMP:
 				printf("\nBoard minimum temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
-			case EAPI_SEMA_ID_BOARD_SYSTEM_MAX_TEMP:
+			case EAPI_SEMA_ID_BOARD_MAX_TEMP:
 				printf("\nBoard maximum temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
-			case EAPI_SEMA_ID_BOARD_SYSTEM_STARTUP_TEMP:
+			case EAPI_SEMA_ID_BOARD_STARTUP_TEMP:
 				printf("\nBoard startup temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
 			case EAPI_SEMA_ID_BOARD_CPU_MIN_TEMP:
@@ -488,6 +487,18 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 				break;
 			case EAPI_SEMA_ID_IO_CURRENT:
 				printf("\nIO Current: %d mA\n", Args->SemaNativeFuncArgs.IntData);
+				break;
+			case EAPI_SEMA_ID_HWMON_SYSTEM_TEMP:
+				printf("\nSystem temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
+				break;
+			case EAPI_SEMA_ID_HWMON_SYSTEM_MIN_TEMP:
+				printf("\nSystem Minimum temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
+				break;
+			case EAPI_SEMA_ID_HWMON_SYSTEM_MAX_TEMP:
+				printf("\nSystem Maximum temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
+				break;
+			case EAPI_SEMA_ID_HWMON_SYSTEM_STARTUP_TEMP:
+				printf("\nSystem Startup temperature: %u K (%d C)\n", Args->SemaNativeFuncArgs.IntData, EAPI_DECODE_CELCIUS(int(Args->SemaNativeFuncArgs.IntData)));
 				break;
 			default:
 				printf("\n%d\n", Args->SemaNativeFuncArgs.IntData);
@@ -705,14 +716,34 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 	{
 		if ((sts = SemaEApiSmartFanSetTempSrc(Args->SmartFaneFuncArgs.FanID, Args->SmartFaneFuncArgs.TempSrc)) == EAPI_STATUS_SUCCESS)
 		{
-			switch (Args->SmartFaneFuncArgs.TempSrc)
+			char boardName[100] = { 0 };
+			uint32_t size = sizeof(boardName);
+			EApiBoardGetStringA(EAPI_ID_BOARD_NAME_STR, (uint8_t*)boardName, &size);
+
+			if ((strstr(boardName, "HPC") != NULL) && (Args->SmartFaneFuncArgs.FanID == 1)) 
 			{
-			case 0:
-				printf("\nTemperature source is set to %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
-				break;
-			case 1:
-				printf("\nTemperature source is set to %d (Baseboard sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
-				break;
+				switch (Args->SmartFaneFuncArgs.TempSrc)
+				{
+				case 0:
+					printf("\nTemperature source is set to %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				case 1:
+					printf("\nTemperature source is set to %d (Carrier sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+
+				}
+			}
+			else
+			{
+				switch (Args->SmartFaneFuncArgs.TempSrc)
+				{
+				case 0:
+					printf("\nTemperature source is set to %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				case 1:
+					printf("\nTemperature source is set to %d (Baseboard sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				}
 			}
 		}
 		return sts;
@@ -722,14 +753,33 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 	{
 		if ((sts = SemaEApiSmartFanGetTempSrc(Args->SmartFaneFuncArgs.FanID, (uint8_t*)(&(Args->SmartFaneFuncArgs.TempSrc)))) == EAPI_STATUS_SUCCESS)
 		{
-			switch (Args->SmartFaneFuncArgs.TempSrc)
+			char boardName[100] = { 0 };
+			uint32_t size = sizeof(boardName);
+			EApiBoardGetStringA(EAPI_ID_BOARD_NAME_STR, (uint8_t*)boardName, &size);
+
+			if ((strstr(boardName, "HPC") != NULL) && (Args->SmartFaneFuncArgs.FanID == 1))
 			{
-			case 0:
-				printf("\nCurrent Temperature source is %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
-				break;
-			case 1:
-				printf("\nCurrent Temperature source is %d (Baseboard sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
-				break;
+				switch (Args->SmartFaneFuncArgs.TempSrc)
+				{
+				case 0:
+					printf("\nCurrent Temperature source is %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				case 1:
+					printf("\nCurrent Temperature source is %d (Carrier sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				}
+			}
+			else
+			{
+				switch (Args->SmartFaneFuncArgs.TempSrc)
+				{
+				case 0:
+					printf("\nCurrent Temperature source is %d (CPU sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				case 1:
+					printf("\nCurrent Temperature source is %d (Baseboard sensor)\n", Args->SmartFaneFuncArgs.TempSrc);
+					break;
+				}
 			}
 		}
 		return sts;

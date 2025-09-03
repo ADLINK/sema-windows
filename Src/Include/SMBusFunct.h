@@ -237,6 +237,12 @@ public:
 	virtual EERROR GetMinMaxTemp_1(int* pchpMinCPU, int* pchMaxCPU, int* pchMinBoard, int* pchMaxBoard);
 	virtual EERROR GetStartupTemp_1(int* pchStartCPU, int* pchStartBoard);
 
+	//System Temp
+	virtual EERROR GetCurrentSystemTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemMinTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemMaxTemp(int32_t* pchTemp);
+	virtual EERROR GetSystemStartupTemp(int32_t* pchTemp);
+
 	virtual EERROR SetSysCtrlReg(uint32_t nValue);
 	
 	virtual EERROR ReadMem(uint8_t Region, uint32_t nAdr, uint8_t* pData, uint32_t nSize);
