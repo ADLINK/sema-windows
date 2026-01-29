@@ -38,4 +38,8 @@ SEMA® is designed to monitor and access the following features on ADLINK boards
 
 * [SEMA Installation Guide for Windows](https://www.adlinktech.com/Products/DownloadMDownload?lang=en&pdNo=1274&MainCategory=Industrial_IoT_and_Cloud_solutions&kind=M)
 
-   
+## 4. License Note
+- SEMA Windows is licensed under the BSD 3-Clause License.
+- All kernel-mode drivers, user-space libraries, and tools are provided under BSD 3-Clause.
+- Documentation and cryptographic materials are excluded from open-source licensing.
+
