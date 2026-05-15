@@ -1,48 +1,48 @@
+# sema-windows 4.2.x
+This is the common repository for SEMA Windows supporting EC and TIVA BMC platforms
+
+## SEMA Overview
+* **SEMA (Smart Embedded Management Agent)** is ADLINK’s embedded system management framework that provides a unified interface for monitoring and controlling hardware features on supported embedded platforms.
+
+* Implements the **PICMG Embedded API (EAPI)** standard to ensure consistent hardware access across different ADLINK boards and modules.
+
+* Serves as an abstraction layer between the operating system and low-level board controllers such as the **Embedded Controller (EC)** or **Board Management Controller (BMC)**.
+
+* Enables standardized access to platform hardware resources including thermal sensors, GPIO, I²C/SMBus devices, watchdog timers, fan controllers, voltage monitoring, and platform information.
+
+* Includes drivers, EAPI libraries and utility for hardware monitoring, system health management, peripheral communication, and embedded platform control on Windows systems.
 
 
-# What is SEMA?
+## Repo Files Overview
 
-**The Smart Embedded Management Agent (SEMA®)**
+* Bin – Includes compiled binaries for the 64-bit environment such as the SEMA driver, Dynamic Link Library (SemaEAPI.dll) and sample utility (semautil.exe).
+* Installer – Contains the Windows installer package for deploying SEMA drivers, libraries, and utilities on supported ADLINK embedded platforms.
+* Src – Contains the source code for the SEMA framework, hardware access APIs, and supporting components.
+* LICENSE.BSD3 – BSD 3-Clause License file.
+* README.md – Documentation describing the project overview, build steps, and usage instructions.
 
-Downtime of devices or systems is not acceptable in today's industries. To help customers analyze their systems and take countermeasures for preventive maintenance, we provide a solution that can promptly monitor and collect system performance and status information from the hardware.
+## Supported Hardware List
+* cExpress-TL , cExpress-EL, cExpress-AR, cExpress-ALN/ASL, cExpress-MTL, cExpress-RLP, cExpress-R8
+* cExpress-AL, cExpress-SL, cExpress-KL, cExpress-WL
+* Express-ID7, Express-ADP, Express-TL
+* Express-CF, Express-BD7, Express-DN7, Express-CFR, Express-SL2, Express-SL/KL
+* COM-HPC-cRLS, COM-HPC-sIDH, COM-HPC-mMTL, COM-HPC-cADP
+* NanoX-EL, NanoX-BT, NanoX-ASL
+* Q7-EL, Q7-AL, ETX-BT
+* Express-VR7
+* LEC-EL, LEC-AL, LEC-ASL/ALN
+  
+## Supported Operating System
+* Windows 10 (64-bit)
+* Windows 11 (64-bit)
 
-A Board Management Controller is embedded in our hardware and collects all relevant technical information from the chipset through different communication interfaces, such as eSPI, I2C, and SMBus.
-
-SEMA® middleware is on top of the Board controller. It provides a ready-made application that shows the data in user-friendly graphic interfaces suitable for supervision and troubleshooting.
-
-## 1. Architecture Overview
-
-<p align="center">
-<img src="readme.assets/picture1.png" width="50%"/>
-</p>
-
-
-SEMA EAPI Library provides you with an interface that the drivers and controllers can access.
-
-**Note:** EAPI (Embedded API) library: PICMG® organization defined the software specification on COM Express for the industrial applications. Here is the available specification https://www.picmg.org/wp-content/uploads/COM_EAPI_R1_0.pdf for your reference.
-
-## 2. Feature Set
-
-SEMA® is designed to monitor and access the following features on ADLINK boards.
-
-1) Power consumption
-2) User area access
-3) I2C control
-4) Monitoring the temperature of the CPU and board
-5) Accessing board information(Serial number, Part number, Version of the firmware)
-6) Fan control
-7) GPIO access for the expander(PCA9535, SX1509)
-8) Watchdog
-
-## 3. Documents
-Refer to this ([link](https://www.adlinktech.com/Products/DownloadMDownload?lang=en&pdNo=1274&MainCategory=Industrial_IoT_and_Cloud_solutions&kind=M)) to see the following guides,
+## Documents
+Refer to this ([link](https://www.adlinktech.com/Products/DownloadMDownload?lang=en&pdNo=1274&MainCategory=Industrial_IoT_and_Cloud_solutions&kind=M)) for the following guides,
 - SEMA Installation Guide
 - SEMA App User Guide
 - SEMA EAPI Guide
 
-## 4. License Note
-- SEMA Windows is licensed under the BSD 3-Clause License.
-- All kernel-mode drivers, user-space libraries, and tools are provided under BSD 3-Clause.
-- Documentation and cryptographic materials are excluded from open-source licensing.
+
+
 
 
