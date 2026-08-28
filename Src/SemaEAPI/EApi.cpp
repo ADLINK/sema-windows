@@ -31,13 +31,8 @@ uint32_t EApiLibInitialize(void)
 	{
 		goto out;
 	}
-#if !EGW3200
-	{
-		BoardType = Ccmn.Init();
-	}
-#else
-	BoardType = I2C;
-#endif
+
+	BoardType = Ccmn.Init();
 
 	if (BoardType == SMB)
 	{
@@ -53,7 +48,6 @@ uint32_t EApiLibInitialize(void)
 	}
 	else
 	{
-		
 		Status = EAPI_STATUS_NOT_FOUND;
 		goto out;
 	}
@@ -564,7 +558,7 @@ uint32_t EApiBoardGetStringA(uint32_t Id, uint8_t* pData, uint32_t *pBufLen)
 
 	case EAPI_ID_BOARD_MANUFACTURER_STR:
 	{
-		Status = StrToBuf(EAPI_MANUFACTURE, pData, pBufLen);
+		Status = StrToBuf(SEMA_VENDOR, pData, pBufLen);
 	}break;
 
 	case EAPI_ID_BOARD_NAME_STR:

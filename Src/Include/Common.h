@@ -118,7 +118,7 @@ class Ccommon_bmc
 
 #define SEMA_VERSION_MAJOR	0x04
 #define SEMA_VERSION_MINOR	0x02
-#define SEMA_VERSION_ADDON  0x15
+#define SEMA_VERSION_ADDON  0x16
 #define SEMA_VERSION_ADDON_STR  "R0"
 #define SEMA_VENDOR			"ADLINK Technology Inc."
 
@@ -155,6 +155,5 @@ public:
 	bool IsWinXPOrLater();
 	EERROR GetBIOSVersion(char* szVersion, uint32_t nSize);
 
-	int Ccommon_bmc::GetPropInfoFromCfgFile(char *propname, char *prop, char **out);
 	void Close();
 };

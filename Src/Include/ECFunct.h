@@ -52,9 +52,11 @@ private:
 #define EC_RO_ADDR_BOOT_CNT					0x38
 #define EC_RO_ADDR_HW_MON_IN				0x50
 #define EC_RW_FAN_CUR_SPEED					0x60
+#define EC_RO_ADDR_SYS_FAN2_SPEED			0xB0
 #define EC_RW_ADDR_BACKLIGHT_PWM			0x6C
 #define EC_RW_CPU_TMP_REG					0x70
 #define EC_RW_SYS_TMP_REG					0x78
+#define EC_RW_SYS_FAN2_TEMP_REG				0x97
 #define EC_RW_ADDR_GPIO_DIR					0x84
 #define EC_RW_ADDR_GPIO_DIR_EXT				0X85
 #define EC_RW_ADDR_GPIO_OUT  				0x86
@@ -62,6 +64,7 @@ private:
 #define EC_RW_ADDR_GPIO_OUT_EXT  			0x87
 #define EC_RW_ADDR_GPIO_IN_EXT				0x89
 #define EC_RO_ADDR_FW_VERSION				0xF0
+#define EC_RO_ADDR_SPEC_VERSION				0xEA
 #define	EC_RO_ADDR_SYS_CUR_TEMP             0x48
 #define	EC_RO_ADDR_SYS_MAX_TEMP             0x49 
 #define	EC_RO_ADDR_SYS_MIN_TEMP             0x4A 
@@ -100,6 +103,7 @@ public:
 	virtual uint32_t GetCapsExt();
 	virtual uint32_t FindCap(uint32_t cap);
 	virtual uint32_t FindCapExt(uint32_t cap);
+	virtual EERROR UpdateDTSTemp();
 
 	virtual EERROR GetVersion(char* szVersion, uint32_t nSize);
 	virtual EERROR GetBootVersion(char* szVersion, uint32_t nSize); 
@@ -122,7 +126,7 @@ public:
 	virtual EERROR GetVolt(uint8_t bChannel, float* pfVoltage);
 	virtual EERROR GetVoltDescExt(uint8_t bChannel, char* szDesc, uint32_t nSize, bool bTruncate);
 	virtual EERROR GetVoltDescEx(uint8_t bChannel, char* pData);
-
+	virtual EERROR UpdateVoltDesc();
 	virtual EERROR GetCurrentChannel(uint8_t* pChannel);
 	virtual EERROR GetMainPowerCurrent(uint16_t* pushPower);
 

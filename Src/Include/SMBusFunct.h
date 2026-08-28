@@ -178,7 +178,6 @@ private:
 
 	EERROR GetRealChannel(char** tbString, uint8_t& bChannelRet);
 
-
 	virtual EERROR SemaApi_TransExt(uint8_t BusNumber, uint8_t Type, uint8_t Length, uint8_t *Buffer);
 	virtual EERROR ReadMemL(uint8_t Region, uint32_t nAdr, uint8_t* pData, uint32_t nSize);
 	virtual EERROR WriteMemL(uint8_t Region, uint32_t nAdr, uint8_t* pData, uint32_t nSize);
@@ -196,7 +195,7 @@ public:
 	virtual uint32_t GetCapsExt();
 	virtual uint32_t FindCap(uint32_t cap);
 	virtual uint32_t FindCapExt(uint32_t cap);
-
+	virtual EERROR UpdateDTSTemp();
 
 	virtual EERROR GetVersion(char* szVersion, uint32_t nSize);
 	virtual EERROR GetBootVersion(char* szVersion, uint32_t nSize);
@@ -220,7 +219,7 @@ public:
 	virtual EERROR GetVolt(uint8_t bChannel, float* pfVoltage);
 	virtual EERROR GetVoltDescExt(uint8_t bChannel, char* szDesc, uint32_t nSize, bool bTruncate);
 	virtual EERROR GetVoltDescEx(uint8_t bChannel, char* pData);
-
+	virtual EERROR UpdateVoltDesc();
 	virtual EERROR GetCurrentChannel(uint8_t* pChannel);
 	virtual EERROR GetMainPowerCurrent(uint16_t* pushPower);
 	

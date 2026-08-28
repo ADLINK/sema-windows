@@ -1573,7 +1573,7 @@ int DispatchCMDToSEMA(tCmdLineArgs *Args)
 
 	if (Args->GtVersion)
 	{
-		printf("\nSEMA Version : %s\n", EAPI_CURRENT_SEMA_VERSION);
+		printf("\nSEMA Version : %s\n", ADLINK_SEMA_VERSION);
 		return 0;
 	}
 	

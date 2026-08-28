@@ -29,14 +29,15 @@ CSMBusFunct::~CSMBusFunct()
 
 	m_clsCmn.Close();
 }
-void GPIO_Registry_read(DWORD *value, int GPIO_Dir_Level);
+
+//void GPIO_Registry_read(DWORD *value, int GPIO_Dir_Level);
+
 
 EERROR CSMBusFunct::Init()
 {
 	char szVersion[MAX_PATH];
 	uint8_t pDataRet[MAX_PATH];
-	uint32_t nRet = MAX_PATH, nCount = 0x00;
-	uint8_t bSelChannel = 0;
+	uint32_t nRet = MAX_PATH;
 
 	ZeroMemory(pDataRet, MAX_PATH);
 
@@ -50,15 +51,6 @@ EERROR CSMBusFunct::Init()
 		m_bInit = TRUE;
 		if (strstr(szVersion, "LiPPERT") || strstr(szVersion, "ADLINK"))
 		{
-			while (tbBoard[nCount] != NULL)
-			{
-				if (strstr(szVersion, tbBoard[nCount]))
-				{
-					break;
-				}
-				nCount++;
-			}
-
 			if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_CAPABILITIES, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
 			{
 				switch (nRet)
@@ -69,90 +61,93 @@ EERROR CSMBusFunct::Init()
 					m_nSemaCapsEx = pDataRet[0x00];
 					m_nSemaCaps = (pDataRet[0x01] << 0x18) + (pDataRet[0x02] << 0x10) + (pDataRet[0x03] << 0x08) + pDataRet[0x04];
 					break;
-
 				case 0x08:
 					m_nSemaCapsEx = (pDataRet[0x00] << 0x18) + (pDataRet[0x01] << 0x10) + (pDataRet[0x02] << 0x08) + pDataRet[0x03];
 					m_nSemaCaps = (pDataRet[0x04] << 0x18) + (pDataRet[0x05] << 0x10) + (pDataRet[0x06] << 0x08) + pDataRet[0x07];
 					break;
-
 				default:
 					m_nSemaCapsEx = -1;
 					m_nSemaCaps = -1;
 				}
 			}
-			else
-			{
-				return EAPI_STATUS_ERROR;
-			}
-
-			if (m_nSemaCaps & SEMA_CAP_TEMPERATURES)
-			{
-				uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
-				ZeroMemory(pDataRet, MAX_PATH);
-				if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_RD_CPUTEMPCUR, NULL, \
-					0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-				{
-					m_bDTSTemp = (nRet == 0x02) ? FALSE : TRUE;
-				}
-			}
-
-			if (m_clsSemaTrans.BlockTrans(m_bBMCAdr, TT_WBL, SEMA_CMD_GET_EXT_VOLT_DESCR, \
-				&bSelChannel, 0x01) == EAPI_STATUS_SUCCESS)
-			{
-				while (m_nTotalChannel < MAX_DESC_NR_CHANNEL)
-				{
-					nRet = MAX_PATH;
-					ZeroMemory(pDataRet, MAX_PATH);
-					if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, \
-						SEMA_CMD_GET_EXT_VOLT_DESCR, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-					{
-						if (m_nTotalChannel > 0x00)
-						{
-							if (strstr(m_tbDesc[0x00], (char*)pDataRet) == m_tbDesc[0x00])
-							{
-								break;
-							}
-						}
-						memcpy_s(m_tbDesc[m_nTotalChannel], MAX_DESC_LEN, pDataRet, nRet > (MAX_DESC_LEN - 0x01) ? \
-							(MAX_DESC_LEN - 0x01) : nRet);
-					}
-					m_nTotalChannel++;
-				}
-			}
-
-			
-			if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_GET_ADC_SCALE, \
-				NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-			{
-				uint8_t bStep = 0x00;
-
-				while (bStep < nRet)
-				{
-					m_tbScale[bStep / 0x02] = (pDataRet[bStep] << 0x08) + pDataRet[bStep + 0x01];
-					bStep += 0x02;
-				}
-				
-				m_nTotalScale = (nRet / 0x02) - 0x01;
-			}
-			
-
-			if (strstr(szVersion, "cExpress-SL/KL"))
-			{
-				DWORD gpio=0;
-				DWORD bitmask=0;
-				GPIO_Registry_read(&gpio, 0);
-				SetGPIODir(gpio,bitmask);
-				GPIO_Registry_read(&gpio, 1);
-				SetGPIO(gpio,bitmask);
-			}
 			return EAPI_STATUS_SUCCESS;
 		}
 	}
 
-	return EAPI_STATUS_NOT_FOUND;
+	return EAPI_STATUS_ERROR;
 }
 
+EERROR CSMBusFunct::UpdateDTSTemp()
+{
+	if (m_nSemaCaps & SEMA_CAP_TEMPERATURES)
+	{
+		uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
+		ZeroMemory(pDataRet, MAX_PATH);
+		if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_RD_CPUTEMPCUR, NULL, \
+			0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+		{
+			m_bDTSTemp = (nRet == 0x02) ? FALSE : TRUE;
+		}
+		else
+			return EAPI_STATUS_ERROR;
+	}
+	return EAPI_STATUS_SUCCESS;
+}
 
+EERROR CSMBusFunct::UpdateVoltDesc()
+{
+	uint8_t pDataRet[MAX_PATH];
+	uint32_t nRet = MAX_PATH;
+	uint8_t bSelChannel = 0;
+
+	if (m_clsSemaTrans.BlockTrans(m_bBMCAdr, TT_WBL, SEMA_CMD_GET_EXT_VOLT_DESCR, \
+		& bSelChannel, 0x01) == EAPI_STATUS_SUCCESS)
+	{
+		while (m_nTotalChannel < MAX_DESC_NR_CHANNEL)
+		{
+			nRet = MAX_PATH;
+			ZeroMemory(pDataRet, MAX_PATH);
+			if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, \
+				SEMA_CMD_GET_EXT_VOLT_DESCR, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+			{
+				if (m_nTotalChannel > 0x00)
+				{
+					if (strstr(m_tbDesc[0x00], (char*)pDataRet) == m_tbDesc[0x00])
+					{
+						break;
+					}
+				}
+				memcpy_s(m_tbDesc[m_nTotalChannel], MAX_DESC_LEN, pDataRet, nRet > (MAX_DESC_LEN - 0x01) ? \
+					(MAX_DESC_LEN - 0x01) : nRet);
+			}
+			else
+				return EAPI_STATUS_READ_ERROR;
+
+			m_nTotalChannel++;
+		}
+	}
+	else
+		return EAPI_STATUS_WRITE_ERROR;
+
+	if (m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_GET_ADC_SCALE, \
+		NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+	{
+		uint8_t bStep = 0x00;
+
+		while (bStep < nRet)
+		{
+			m_tbScale[bStep / 0x02] = (pDataRet[bStep] << 0x08) + pDataRet[bStep + 0x01];
+			bStep += 0x02;
+		}
+
+		m_nTotalScale = (nRet / 0x02) - 0x01;
+	}
+	else
+		return EAPI_STATUS_READ_ERROR;
+
+	return EAPI_STATUS_SUCCESS;
+}
+#if 0
 void GPIO_Registry_read(DWORD *value, int GPIO_Dir_Level)
 {
 	DWORD dwRet, cbData;
@@ -178,6 +173,7 @@ void GPIO_Registry_read(DWORD *value, int GPIO_Dir_Level)
 	RegCloseKey(hkey);
 
 }
+#endif
 bool CSMBusFunct::IsInitialiezed()
 {
 	return m_bInit;
@@ -609,9 +605,17 @@ EERROR CSMBusFunct::GetVolt(uint8_t bChannel, float* pfVoltage)
 	ZeroMemory(pDataRet, MAX_PATH);
 	*pfVoltage = 0.0f;
 
-	if (bChannel > m_nTotalScale)
+	if (bChannel >= m_nTotalScale)
 	{
-		return EAPI_STATUS_UNSUPPORTED;
+		if (UpdateVoltDesc() != EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_UNSUPPORTED;
+		}
+
+		if (bChannel > m_nTotalScale)
+		{
+			return EAPI_STATUS_UNSUPPORTED;
+		}
 	}
 
 	if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, (bChannel >= 0x08) ? \
@@ -744,6 +748,11 @@ EERROR CSMBusFunct::GetMainPowerCurrent(uint16_t* pushPower)
 	EERROR eRet;
 	uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
 
+	if ((eRet = UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	ZeroMemory(pDataRet, MAX_PATH);
 
 	if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_RD_MPCURRENT,\
@@ -842,6 +851,11 @@ EERROR CSMBusFunct::GetCurrentCPUTemp(int32_t* pfTemp)
 	if (strstr(szChipSet, "Intel") == NULL)
 	{
 		return EAPI_STATUS_ERROR;
+	}
+
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
 	}
 	
 	if (m_bDTSTemp)
@@ -944,6 +958,11 @@ EERROR CSMBusFunct::GetCPUMinMaxTemp(int* pchMinCPU, int* pchMaxCPU)
 
 	*pchMinCPU = *pchMaxCPU = 0x00;
 
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	if (m_bDTSTemp == TRUE)
 	{
 		return EAPI_STATUS_UNSUPPORTED;
@@ -999,6 +1018,11 @@ EERROR CSMBusFunct::GetCPUStartupTemp(int* pchStartCPU)
 
 	*pchStartCPU = 0x00;
 
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	if (m_bDTSTemp == TRUE)
 	{
 		return EAPI_STATUS_UNSUPPORTED;
@@ -1046,11 +1070,14 @@ EERROR CSMBusFunct::GetMinMaxTemp_1(int* pchMinCPU, int* pchMaxCPU, int* pchMinB
 {
 	EERROR eRet;
 	uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
-
 	ZeroMemory(pDataRet, MAX_PATH);
 
-
 	*pchMinCPU = *pchMaxCPU = *pchMinBoard = *pchMaxBoard = 0x00;
+
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
 	
 	if ((eRet = m_clsSemaTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL, SEMA_CMD_RD_MINMAXTEMP, \
 		NULL, 0x00, pDataRet, nRet)) == EAPI_STATUS_SUCCESS)
@@ -1191,7 +1218,7 @@ EERROR CSMBusFunct::GetRealChannel(char** tbString, uint8_t& bChannelRet)
 	char szRet[MAX_PATH];
 	uint8_t bChannel = 0x00;
 	uint32_t nCount = 0x00;
-
+	
 	while (bChannel < m_nTotalChannel)
 	{
 		ZeroMemory(szRet, MAX_PATH);
@@ -1239,6 +1266,11 @@ EERROR CSMBusFunct::GetHWMonitor(char** tbString, uint32_t* pnValue)
 	EERROR eRet;
 	uint8_t bRealChannel = -1;
 	float flVolt = 0.00;
+
+	if ((eRet = UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
 
 	if ((eRet = GetRealChannel(tbString, bRealChannel)) != EAPI_STATUS_SUCCESS)
 	{

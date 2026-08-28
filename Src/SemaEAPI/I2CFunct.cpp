@@ -32,11 +32,9 @@ CI2CFunct::~CI2CFunct()
 
 EERROR CI2CFunct::Init()
 {
-#if 1
 	char szVersion[MAX_PATH];
 	uint8_t pDataRet[MAX_PATH];
-	uint32_t nRet = MAX_PATH, nCount = 0x00;
-	uint8_t bSelChannel = 0;
+	uint32_t nRet = MAX_PATH;
 
 	ZeroMemory(pDataRet, MAX_PATH);
 
@@ -48,19 +46,8 @@ EERROR CI2CFunct::Init()
 	{
 		m_bInit = TRUE;
 	
-#if !EGW3200
 		if (strstr(szVersion, "LiPPERT") || strstr(szVersion, "ADLINK") || strstr(szVersion, "EGW"))
 		{
-			//printf("checked ok.\n");
-			while (tbBoard[nCount] != NULL)
-			{
-				if (strstr(szVersion, tbBoard[nCount]))
-				{
-					break;
-				}
-				nCount++;
-			}
-#endif
 			if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_CAPABILITIES, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
 			{
 				switch (nRet)
@@ -86,63 +73,78 @@ EERROR CI2CFunct::Init()
 			{
 				return EAPI_STATUS_ERROR;
 			}
-
-			if (m_nSemaCaps & SEMA_CAP_TEMPERATURES)
-			{
-				uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
-				ZeroMemory(pDataRet, MAX_PATH);
-				if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_RD_CPUTEMPCUR, NULL, \
-					0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-				{
-					m_bDTSTemp = (nRet == 0x02) ? FALSE : TRUE;
-				}
-			}
-
-			if (m_clsI2CTrans.BlockTrans(m_bBMCAdr, TT_WBL_I2C, SEMA_CMD_GET_EXT_VOLT_DESCR, \
-				&bSelChannel, 0x01) == EAPI_STATUS_SUCCESS)
-			{
-				while (m_nTotalChannel < MAX_DESC_NR_CHANNEL)
-				{
-					nRet = MAX_PATH;
-					ZeroMemory(pDataRet, MAX_PATH);
-					if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, \
-						SEMA_CMD_GET_EXT_VOLT_DESCR, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-					{
-						if (m_nTotalChannel > 0x00)
-						{
-							if (strstr(m_tbDesc[0x00], (char*)pDataRet) == m_tbDesc[0x00])
-							{
-								break;
-							}
-						}
-						memcpy_s(m_tbDesc[m_nTotalChannel], MAX_DESC_LEN, pDataRet, nRet > (MAX_DESC_LEN - 0x01) ? \
-							(MAX_DESC_LEN - 0x01) : nRet);
-					}
-					m_nTotalChannel++;
-				}
-			}
-
-
-			if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_GET_ADC_SCALE, \
-				NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
-			{
-				uint8_t bStep = 0x00;
-
-				while (bStep < nRet)
-				{
-					m_tbScale[bStep / 0x02] = (pDataRet[bStep] << 0x08) + pDataRet[bStep + 0x01];
-					bStep += 0x02;
-				}
-				
-				m_nTotalScale = (nRet / 0x02) - 0x01;
-			}
 			return EAPI_STATUS_SUCCESS;
-#if !EGW3200
 		}
-#endif
 	}
-#endif
-	return EAPI_STATUS_NOT_FOUND;
+	return EAPI_STATUS_ERROR;
+}
+
+EERROR CI2CFunct::UpdateDTSTemp()
+{
+	if (m_nSemaCaps & SEMA_CAP_TEMPERATURES)
+	{
+		uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
+		ZeroMemory(pDataRet, MAX_PATH);
+		if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_RD_CPUTEMPCUR, NULL, \
+			0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+		{
+			m_bDTSTemp = (nRet == 0x02) ? FALSE : TRUE;
+		}
+		else
+			return EAPI_STATUS_SUCCESS;
+	}
+	return EAPI_STATUS_SUCCESS;
+}
+
+EERROR CI2CFunct::UpdateVoltDesc()
+{
+	uint8_t pDataRet[MAX_PATH];
+	uint32_t nRet = MAX_PATH;
+	uint8_t bSelChannel = 0;
+
+	if (m_clsI2CTrans.BlockTrans(m_bBMCAdr, TT_WBL_I2C, SEMA_CMD_GET_EXT_VOLT_DESCR, \
+		& bSelChannel, 0x01) == EAPI_STATUS_SUCCESS)
+	{
+		while (m_nTotalChannel < MAX_DESC_NR_CHANNEL)
+		{
+			nRet = MAX_PATH;
+			ZeroMemory(pDataRet, MAX_PATH);
+			if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, \
+				SEMA_CMD_GET_EXT_VOLT_DESCR, NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+			{
+				if (m_nTotalChannel > 0x00)
+				{
+					if (strstr(m_tbDesc[0x00], (char*)pDataRet) == m_tbDesc[0x00])
+					{
+						break;
+					}
+				}
+				memcpy_s(m_tbDesc[m_nTotalChannel], MAX_DESC_LEN, pDataRet, nRet > (MAX_DESC_LEN - 0x01) ? \
+					(MAX_DESC_LEN - 0x01) : nRet);
+			}
+			m_nTotalChannel++;
+		}
+	}
+	else
+		return EAPI_STATUS_WRITE_ERROR;
+
+	if (m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_GET_ADC_SCALE, \
+		NULL, 0x00, pDataRet, nRet) == EAPI_STATUS_SUCCESS)
+	{
+		uint8_t bStep = 0x00;
+
+		while (bStep < nRet)
+		{
+			m_tbScale[bStep / 0x02] = (pDataRet[bStep] << 0x08) + pDataRet[bStep + 0x01];
+			bStep += 0x02;
+		}
+
+		m_nTotalScale = (nRet / 0x02) - 0x01;
+	}
+	else
+		return EAPI_STATUS_READ_ERROR;
+
+	return EAPI_STATUS_SUCCESS;
 }
 
 bool CI2CFunct::IsInitialiezed()
@@ -609,9 +611,17 @@ EERROR CI2CFunct::GetVolt(uint8_t bChannel, float* pfVoltage)
 	ZeroMemory(pDataRet, MAX_PATH);
 	*pfVoltage = 0.0f;
 
-	if (bChannel > m_nTotalScale)
+	if (bChannel >= m_nTotalScale)
 	{
-		return EAPI_STATUS_UNSUPPORTED;
+		if (UpdateVoltDesc() != EAPI_STATUS_SUCCESS)
+		{
+			return EAPI_STATUS_UNSUPPORTED;
+		}
+
+		if (bChannel > m_nTotalScale)
+		{
+			return EAPI_STATUS_UNSUPPORTED;
+		}
 	}
 
 	if ((eRet = m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, (bChannel >= 0x08) ? \
@@ -752,6 +762,11 @@ EERROR CI2CFunct::GetMainPowerCurrent(uint16_t* pushPower)
 	EERROR eRet;
 	uint8_t pDataRet[MAX_PATH]; uint32_t nRet = MAX_PATH;
 
+	if ((eRet = UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	ZeroMemory(pDataRet, MAX_PATH);
 
 	if ((eRet = m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_RD_MPCURRENT,\
@@ -858,6 +873,11 @@ EERROR CI2CFunct::GetCurrentCPUTemp(int32_t* pfTemp)
 	{
 		printf("Failed at Intel\n");
 		return EAPI_STATUS_ERROR;
+	}
+
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
 	}
 	
 	if (m_bDTSTemp)
@@ -969,6 +989,11 @@ EERROR CI2CFunct::GetCPUMinMaxTemp(int* pchMinCPU, int* pchMaxCPU)
 
 	*pchMinCPU = *pchMaxCPU = 0x00;
 
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	if (m_bDTSTemp == TRUE)
 	{
 		return EAPI_STATUS_UNSUPPORTED;
@@ -1030,6 +1055,11 @@ EERROR CI2CFunct::GetCPUStartupTemp(int* pchStartCPU)
 
 	*pchStartCPU = 0x00;
 
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
+
 	if (m_bDTSTemp == TRUE)
 	{
 		return EAPI_STATUS_UNSUPPORTED;
@@ -1087,8 +1117,12 @@ EERROR CI2CFunct::GetMinMaxTemp_1(int* pchMinCPU, int* pchMaxCPU, int* pchMinBoa
 
 	ZeroMemory(pDataRet, MAX_PATH);
 
-
 	*pchMinCPU = *pchMaxCPU = *pchMinBoard = *pchMaxBoard = 0x00;
+
+	if ((eRet = UpdateDTSTemp()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
 	
 	if ((eRet = m_clsI2CTrans.BlockTrans(m_bBMCAdr | 0x01, TT_RBL_I2C, SEMA_CMD_RD_MINMAXTEMP, \
 		NULL, 0x00, pDataRet, nRet)) == EAPI_STATUS_SUCCESS)
@@ -1292,6 +1326,11 @@ EERROR CI2CFunct::GetHWMonitor(char** tbString, uint32_t* pnValue)
 	EERROR eRet;
 	uint8_t bRealChannel = -1;
 	float flVolt = 0.00;
+
+	if ((eRet = UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return eRet;
+	}
 
 	if ((eRet = GetRealChannel(tbString, bRealChannel)) != EAPI_STATUS_SUCCESS)
 	{

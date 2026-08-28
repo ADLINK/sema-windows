@@ -25,6 +25,7 @@ public:
 	virtual uint32_t GetCapsExt() PURE;
 	virtual uint32_t FindCap(uint32_t cap)PURE;
 	virtual uint32_t FindCapExt(uint32_t cap)PURE;
+	virtual EERROR UpdateDTSTemp()PURE;
 
 	virtual EERROR GetVersion(char* szVersion, uint32_t nSize) PURE;
 	virtual EERROR GetBootVersion(char* szVersion, uint32_t nSize) PURE;
@@ -46,7 +47,7 @@ public:
 	virtual EERROR GetScaleFactor(uint8_t bChannel, uint16_t* pushScale) PURE;
 	virtual EERROR GetVolt(uint8_t bChannel, float* pfVoltage) PURE;
 	virtual EERROR GetVoltDescEx(uint8_t bChannel, char* pData) PURE;
-
+	virtual EERROR UpdateVoltDesc() PURE;
 	virtual EERROR GetVoltDescExt(uint8_t bChannel, char* szDesc, uint32_t nSize, bool bTruncate) PURE;
 	virtual EERROR GetHWMonitor(char** tbString, uint32_t* pnValue) PURE;
 	virtual EERROR GetCurrentChannel(uint8_t* pChannel) PURE;

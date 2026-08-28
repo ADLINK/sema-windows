@@ -15,7 +15,7 @@
 
 EERROR CECFunct::GetSmartFanSupport(uint32_t FanId)
 {
-	unsigned int fanid_list[] = { SEMA_CAP_FAN_CPU, SEMA_CAP_FAN_1, 0, 0};
+	unsigned int fanid_list[] = { SEMA_CAP_FAN_CPU, SEMA_CAP_FAN_1, SEMA_CAP_FAN_2, 0};
 
 	if ((!!(m_nSemaCaps & fanid_list[FanId])) != 1)
 	{
@@ -38,6 +38,9 @@ EERROR CECFunct::GetSmartFanTempPoints(uint32_t nFanNr, char* pData, uint32_t nS
 		break;
 	case SEMA_FAN_SYSTEM_1:
 		bCmd = EC_RW_SYS_TMP_REG;
+		break;
+	case SEMA_FAN_SYSTEM_2:
+		bCmd = EC_RW_SYS_FAN2_TEMP_REG;
 		break;
 	default:
 		return EAPI_STATUS_UNSUPPORTED;
@@ -67,6 +70,9 @@ EERROR CECFunct::GetSmartFanPWMPoints(uint32_t nFanNr, char* pData, uint32_t nSi
 		break;
 	case SEMA_FAN_SYSTEM_1:
 		bCmd = EC_RW_SYS_TMP_REG;
+		break;
+	case SEMA_FAN_SYSTEM_2:
+		bCmd = EC_RW_SYS_FAN2_TEMP_REG;
 		break;
 	default:
 		return EAPI_STATUS_UNSUPPORTED;
@@ -98,6 +104,9 @@ EERROR CECFunct::GetSmartFanMode(uint32_t nFanNr, uint8_t* pData)
 		case SEMA_FAN_SYSTEM_1:
 			nCtrlReg = (nCtrlReg & (0x03 << 11)) >> 11;
 			break;
+		case SEMA_FAN_SYSTEM_2:
+			nCtrlReg = (nCtrlReg & (0x03 << 17)) >> 17;
+			break;
 		default:
 			return EAPI_STATUS_UNSUPPORTED;
 		}
@@ -111,7 +120,7 @@ EERROR CECFunct::GetSmartFanTempSrc(uint32_t nFanNr, uint8_t* pData)
 {
 	EERROR eRet;
 	uint32_t nCtrlReg = 0x00;
-
+	
 	if ((eRet = GetSysCtrlReg(&nCtrlReg)) == EAPI_STATUS_SUCCESS)
 	{
 		switch (nFanNr)
@@ -121,6 +130,9 @@ EERROR CECFunct::GetSmartFanTempSrc(uint32_t nFanNr, uint8_t* pData)
 			break;
 		case SEMA_FAN_SYSTEM_1:
 			*pData = (nCtrlReg >> 13) & 0x01 ? SEMA_FAN_TEMP_SYS : SEMA_FAN_TEMP_CPU;
+			break;
+		case SEMA_FAN_SYSTEM_2:
+			*pData = (nCtrlReg >> 16) & 0x01 ? SEMA_FAN_TEMP_SYS : SEMA_FAN_TEMP_CPU;
 			break;
 		default:
 			return EAPI_STATUS_UNSUPPORTED;
@@ -142,6 +154,9 @@ EERROR CECFunct::SetSmartFanTempPoints(uint32_t nFanNr, char* pData, uint32_t nS
 		break;
 	case SEMA_FAN_SYSTEM_1:
 		bCmd = EC_RW_SYS_TMP_REG;
+		break;
+	case SEMA_FAN_SYSTEM_2:
+		bCmd = EC_RW_SYS_FAN2_TEMP_REG;
 		break;
 	default:
 		return EAPI_STATUS_ERROR;
@@ -166,6 +181,9 @@ EERROR CECFunct::SetSmartFanPWMPoints(uint32_t nFanNr, char* pData, uint32_t nSi
 		break;
 	case SEMA_FAN_SYSTEM_1:
 		bCmd = EC_RW_SYS_TMP_REG;
+		break;
+	case SEMA_FAN_SYSTEM_2:
+		bCmd = EC_RW_SYS_FAN2_TEMP_REG;
 		break;
 	default:
 		return EAPI_STATUS_ERROR;
@@ -202,6 +220,10 @@ EERROR CECFunct::SetSmartFanMode(uint32_t nFanNr, uint8_t bMode)
 	case SEMA_FAN_SYSTEM_1:
 		nCtrlReg &= 0xFFFFE7FF;
 		nDataSet = 0x0B;
+		break;
+	case SEMA_FAN_SYSTEM_2:
+		nCtrlReg &= 0xFFF9FFFF;
+		nDataSet = 0x11;
 		break;
 	default:
 		return EAPI_STATUS_UNSUPPORTED;
@@ -247,6 +269,9 @@ EERROR CECFunct::SetSmartFanTempSrc(uint32_t nFanNr, uint8_t bSrc)
 	case SEMA_FAN_SYSTEM_1:
 		nDataSet = 13;
 		break;
+	case SEMA_FAN_SYSTEM_2:
+		nDataSet = 16;
+		break;
 	default:
 		return EAPI_STATUS_ERROR;
 	}
@@ -269,7 +294,10 @@ EERROR CECFunct::GetFanSpeed(uint32_t nFanNr, uint16_t* pushSpeed)
 	EERROR eRet;
 	uint16_t fan_addr;
 
-	fan_addr = (nFanNr * 2) + EC_RW_FAN_CUR_SPEED;
+	if (nFanNr == SEMA_FAN_SYSTEM_2)
+		fan_addr = EC_RO_ADDR_SYS_FAN2_SPEED;
+	else
+		fan_addr = (nFanNr * 2) + EC_RW_FAN_CUR_SPEED;
 
 	eRet = m_clsECTrans.ECRead(fan_addr, EC_REGION_1, (uint8_t*)pushSpeed, 2);
 

@@ -32,9 +32,9 @@ EERROR CECFunct::Init()
 {
 	int i,j;
 	unsigned char *ptr[2];
-	char szVersion[EC_VER_SIZE] = { 0 };
+	char VendorName[MAX_PATH];
 	uint8_t pDataRet[MAX_PATH];
-
+	uint8_t status = 0;
 	ZeroMemory(pDataRet, MAX_PATH);
 
 	if (m_clsECTrans.Init(m_clsCmn.m_hDrv) != EAPI_STATUS_SUCCESS)
@@ -47,9 +47,32 @@ EERROR CECFunct::Init()
 	ptr[0] = (unsigned char*)&m_nSemaCaps;
 	ptr[1] = (unsigned char*)&m_nSemaCapsEx;
 	
-	
+	ZeroMemory(VendorName, MAX_PATH);
+
+	if (m_clsECTrans.ECRead(EC_RO_ADDR_FW_VERSION, EC_REGION_1, (uint8_t*)VendorName, 0x10) == EAPI_STATUS_SUCCESS)
+	{
+		if (strstr(VendorName, "LiPPERT") == NULL && strstr(VendorName, "ADLINK") == NULL)
+		{
+			status = 0;
+
+			if (m_clsECTrans.ECRead(EC_RO_ADDR_SPEC_VERSION, EC_REGION_1, &status, 1) == EAPI_STATUS_SUCCESS)
+			{
+				if (status != 0x34)
+				{
+					return EAPI_STATUS_ERROR;
+				}
+			}
+			else
+			{
+				return EAPI_STATUS_READ_ERROR;
+			}
+		}
+	}
+	else
+		return EAPI_STATUS_READ_ERROR;
+
 	/*Wait and Reading the capability */
-	for (j = 0; j < 100; j++)
+	for (j = 0; j < 10; j++)
 	{
 		if (m_nSemaCaps == SEMA_CAP_NONE)
 		{
@@ -66,76 +89,6 @@ EERROR CECFunct::Init()
 		}
 		else
 			break;
-	}
-	
-	//EC address =(0x10)EC_RO_ADDR_CAPABILITIES+5(15th EC address byte has "Hardware Monitor Input" string)
-	//EC_REGION_2 is used only in mem and i2c. So using EC_REGION_1.
-	unsigned char *pData;
-	
-	uint8_t hardware_monitor=0;
-	if (m_clsECTrans.ECRead(EC_RO_ADDR_CAPABILITIES+0x05, EC_REGION_1, pDataRet, 1) == EAPI_STATUS_SUCCESS)
-	{
-		hardware_monitor = (pDataRet[0] & 0x08)?1:0 ; //To get 43rd bit
-		
-		if(hardware_monitor==1)
-		{
-			int i=0, BlockLength =4;
-			for (i=0; i<8;i++)
-			{
-				pData = (unsigned char*)calloc(sizeof(unsigned char), 16 + 2 * BlockLength);
-
-				if (EApiStorageAreaRead(5,  (i * 0x10), pData, 16 + 2 * BlockLength, 16) == EAPI_STATUS_SUCCESS)
-				{
-					DescriptorList[i] = (char *)pData;
-				}
-				else{		// returns error when failed to write SEMA_CMD_READ_DATA
-					return EAPI_STATUS_ERROR;
-				}
-
-			}
-		}
-	}
-	else		// returns error when failed to read EC_RO_ADDR_CAPABILITIES
-		return EAPI_STATUS_ERROR;
-	
-	if (hardware_monitor != 1)
-	{
-		if (m_clsCmn.ainlist != NULL)
-		{
-			char *next;
-			int i = 0;
-
-			char *string = strtok_s(m_clsCmn.ainlist, "#", &next);
-
-			while (string != NULL && i < (sizeof(DescriptorList) / sizeof(DescriptorList[0])))
-			{
-				DescriptorList[i] = string;
-				string = strtok_s(NULL, "#", &next);
-				i++;
-			}
-		}
-	}
-		
-	if (m_clsCmn.exetbl != NULL)
-	{
-		char *next;
-		int i = 0;
-
-		char *string = strtok_s(m_clsCmn.exetbl, "#", &next);
-
-		while (string != NULL && i < (sizeof(ExcepDescList) / sizeof(ExcepDescList[0])))
-		{
-			ExcepDescList[i] = string;
-			string = strtok_s(NULL, "#", &next);
-			i++;
-		}
-	}
-
-	for (i = 0; i < (sizeof(DescriptorList) / sizeof(DescriptorList[0])) && DescriptorList[i] != NULL; i++)
-	{
-		memset(m_tbDesc[i], 0, 25);
-		memcpy_s(m_tbDesc[i], 25, DescriptorList[i], strlen(DescriptorList[i]));
-		m_nTotalChannel++;
 	}
 
 	return EAPI_STATUS_SUCCESS;
@@ -165,6 +118,53 @@ uint32_t CECFunct::FindCap(uint32_t cap)
 uint32_t CECFunct::FindCapExt(uint32_t cap)
 {
 	return !!(m_nSemaCapsEx & cap);
+}
+
+EERROR CECFunct::UpdateDTSTemp()
+{
+	return EAPI_STATUS_UNSUPPORTED;
+}
+
+EERROR CECFunct::UpdateVoltDesc()
+{
+	int i;
+	unsigned char* pData;
+	uint8_t pDataRet[MAX_PATH];
+	uint8_t hardware_monitor = 0;
+
+	if (m_clsECTrans.ECRead(EC_RO_ADDR_CAPABILITIES + 0x05, EC_REGION_1, pDataRet, 1) == EAPI_STATUS_SUCCESS)
+	{
+		hardware_monitor = (pDataRet[0] & 0x08) ? 1 : 0; //To get 43rd bit
+
+		if (hardware_monitor == 1)
+		{
+			int i = 0, BlockLength = 4;
+			for (i = 0; i < 8; i++)
+			{
+				pData = (unsigned char*)calloc(sizeof(unsigned char), 16 + 2 * BlockLength);
+
+				if (EApiStorageAreaRead(5, (i * 0x10), pData, 16 + 2 * BlockLength, 16) == EAPI_STATUS_SUCCESS)
+				{
+					DescriptorList[i] = (char*)pData;
+				}
+				else {		// returns error when failed to write SEMA_CMD_READ_DATA
+					return EAPI_STATUS_ERROR;
+				}
+
+			}
+		}
+	}
+	else		// returns error when failed to read EC_RO_ADDR_CAPABILITIES
+		return EAPI_STATUS_ERROR;
+
+	for (i = 0; i < (sizeof(DescriptorList) / sizeof(DescriptorList[0])) && DescriptorList[i] != NULL; i++)
+	{
+		memset(m_tbDesc[i], 0, 25);
+		memcpy_s(m_tbDesc[i], 25, DescriptorList[i], strlen(DescriptorList[i]));
+		m_nTotalChannel++;
+	}
+
+	return EAPI_STATUS_SUCCESS;
 }
 
 EERROR CECFunct::GetSysCtrlReg(uint32_t* pnCtrlReg)
@@ -451,6 +451,11 @@ EERROR CECFunct::GetVoltDescExt(uint8_t bChannel, char* szDesc, uint32_t nSize, 
 		return EAPI_STATUS_UNSUPPORTED;
 	}
 
+	if ((UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return EAPI_STATUS_ERROR;
+	}
+
 	if (m_nTotalChannel == 0x00)
 	{
 		return EAPI_STATUS_ERROR;
@@ -556,6 +561,7 @@ EERROR CECFunct::GetVolt(uint8_t bChannel, float* pfVoltage)
 
 EERROR CECFunct::GetVoltDescEx(uint8_t bChannel, char* pData)
 {
+	EERROR eRet;
 	char buff[25] = "=", i;
 
 	if (bChannel > DESC_NR_CHANNEL)
@@ -563,25 +569,28 @@ EERROR CECFunct::GetVoltDescEx(uint8_t bChannel, char* pData)
 		return EAPI_STATUS_UNSUPPORTED;
 	}
 
-	for (i = 0; m_tbDesc[bChannel] != 0; i++)
+	if ((eRet = UpdateVoltDesc()) == EAPI_STATUS_SUCCESS)
 	{
-		if (m_tbDesc[bChannel][i] <= 'Z' && m_tbDesc[bChannel][i] >= 'A' || \
-			m_tbDesc[bChannel][i] <= 'z' && m_tbDesc[bChannel][i] >= 'a' || \
-			m_tbDesc[bChannel][i] <= '9' && m_tbDesc[bChannel][i] >= '0')
+		for (i = 0; m_tbDesc[bChannel] != 0; i++)
 		{
-			break;
+			if (m_tbDesc[bChannel][i] <= 'Z' && m_tbDesc[bChannel][i] >= 'A' || \
+				m_tbDesc[bChannel][i] <= 'z' && m_tbDesc[bChannel][i] >= 'a' || \
+				m_tbDesc[bChannel][i] <= '9' && m_tbDesc[bChannel][i] >= '0')
+			{
+				break;
+			}
+		}
+
+		//EAPI expects = between no and description.
+		strcat_s(buff, 25, &m_tbDesc[bChannel][i]);
+
+		if (memcpy_s(pData, 25, buff, strlen(buff)) == 0)
+		{
+			return EAPI_STATUS_SUCCESS;
 		}
 	}
 
-	//EAPI expects = between no and description.
-	strcat_s(buff, 25, &m_tbDesc[bChannel][i]);
-
-	if (memcpy_s(pData, 25, buff, strlen(buff)) == 0)
-	{
-		return EAPI_STATUS_SUCCESS;
-	}
-
-	return EAPI_STATUS_ERROR;
+	return eRet;
 }
 
 EERROR CECFunct::GetErrorDesc(uint32_t nErrorCode, uint8_t* pData, uint32_t* pnDataSize)
@@ -608,9 +617,13 @@ EERROR CECFunct::GetCurrentChannel(uint8_t* pChannel)
 {
 	int i;
 
+	if ((UpdateVoltDesc()) != EAPI_STATUS_SUCCESS)
+	{
+		return EAPI_STATUS_SUCCESS;
+	}
+
 	for (i = 0; i < sizeof(DescriptorList) / sizeof(DescriptorList[0]); i++)
 	{
-		
 		if (strstr(DescriptorList[i], "Current ") != NULL)
 		{
 			*pChannel = i;
